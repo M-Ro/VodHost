@@ -1,4 +1,14 @@
 <?php
+if (PHP_SAPI == 'cli-server') {
+    // To help the built-in PHP dev server, check if the request was actually for
+    // something which should probably be served as a static file
+    $url  = parse_url($_SERVER['REQUEST_URI']);
+    $file = __DIR__ . $url['path'];
+    if (is_file($file)) {
+        return false;
+    }
+}
+
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
@@ -8,6 +18,8 @@ require 'src/public/settings.php';
 $app = new \Slim\App(['settings' => $config]);;
 $container = $app->getContainer();
 
+$container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
+
 $container['logger'] = function($c) {
     $logger = new \Monolog\Logger('Log');
     $file_handler = new \Monolog\Handler\StreamHandler('logs/app.log');
@@ -16,7 +28,8 @@ $container['logger'] = function($c) {
 };
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write("Default Index Page");
+    $response = $this->view->render($response, 'index.phtml');
+    // $response = $this->view->render($response, 'index.phtml', ['key' => $val]);
     return $response;
 });
 
