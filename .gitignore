@@ -1,0 +1,4 @@
+vendor/*
+logs/*
+src/public/settings.php
+composer.phar

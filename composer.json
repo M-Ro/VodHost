@@ -1,0 +1,14 @@
+{
+	"minimum-stability" : "dev",
+	"prefer-stable" : true,
+    "require": {
+        "slim/slim": "^3.0",
+        "monolog/monolog": "^1.23",
+		"slim/php-view": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "classes/"
+        }
+    }
+}
