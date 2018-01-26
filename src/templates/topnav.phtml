@@ -1,11 +1,15 @@
 <div class="header">
     <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
-        <a class="pure-menu-heading" href="">VoDHost</a>
+        <a class="pure-menu-heading" href="/">VoDHost</a>
 
         <ul class="pure-menu-list">
-            <li class="pure-menu-item pure-menu-selected"><a href="/" class="pure-menu-link">Home</a></li>
+            <?php if($loggedIn == false): ?>
             <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Login</a></li>
             <li class="pure-menu-item"><a href="/register" class="pure-menu-link">Register</a></li>
+        	<?php else: ?>
+			<li class="pure-menu-item"><a href="/account" class="pure-menu-link">$User</a></li>
+        	<li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Logout</a></li>
+            <?php endif; ?>
         </ul>
     </div>
 </div>

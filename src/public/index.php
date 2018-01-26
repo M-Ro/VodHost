@@ -11,6 +11,7 @@ if (PHP_SAPI == 'cli-server') {
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use Dflydev\FigCookies\Cookie;
 
 require 'vendor/autoload.php';
 require 'src/public/settings.php';
@@ -27,25 +28,52 @@ $container['logger'] = function($c) {
     return $logger;
 };
 
+$container['db'] = function ($c) {
+    $pdo = new PDO("sqlite:" . $config['SQLiteFilePath']);
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+    return $pdo;
+};
+
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $response = $this->view->render($response, 'index.phtml');
-    // $response = $this->view->render($response, 'index.phtml', ['key' => $val]);
+    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+
+    $response = $this->view->render($response, 'index.phtml', ['loggedIn' => $loggedIn]);
     return $response;
 });
 
 $app->get('/login', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write("Login Page");
+    $response = $this->view->render($response, 'login.phtml');
     return $response;
 });
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
-    $response->getBody()->write("Register Page");
+    $response = $this->view->render($response, 'register.phtml');
     return $response;
 });
 
 $app->get('/view/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
     $response->getBody()->write("Hello, $id");
+    return $response;
+});
+
+$app->post('/attempt_signup', function (Request $request, Response $response, array $args) {
+
+    $data = $request->getParsedBody();
+
+    $user_data = [];
+    $user_data['username'] = filter_var($data['username'], FILTER_SANITIZE_STRING);
+    $user_data['email'] = filter_var($data['email'], FILTER_SANITIZE_STRING);
+    $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
+
+    $user = new \App\Backend\UserEntity($user_data);
+    $user_mapper = new \App\Backend\UserMapper($this->db);
+    $user_mapper->save($ticket);
+
+    $response->getBody()->write("Hello, " . $user_data['username']);
     return $response;
 });
 $app->run();

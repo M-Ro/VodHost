@@ -3,3 +3,4 @@ logs/*
 src/public/settings.php
 composer.phar
 run.sh
+db/*
