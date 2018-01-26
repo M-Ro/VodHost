@@ -29,6 +29,7 @@ $container['logger'] = function($c) {
 };
 
 $container['db'] = function ($c) {
+    global $config;
     $pdo = new PDO("sqlite:" . $config['SQLiteFilePath']);
 
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -60,6 +61,16 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
     return $response;
 });
 
+// FIXME: Temporary hack to create db tables, this should obviouslyh not be accessible later.
+$app->get('/admin_createdb', function (Request $request, Response $response, array $args) {
+    
+    $user_mapper = new \App\Backend\UserMapper($this->db);
+    $user_mapper->createUsersTable();
+
+    $response->getBody()->write("Done");
+    return $response;
+});
+
 $app->post('/attempt_signup', function (Request $request, Response $response, array $args) {
 
     $data = $request->getParsedBody();
@@ -71,7 +82,7 @@ $app->post('/attempt_signup', function (Request $request, Response $response, ar
 
     $user = new \App\Backend\UserEntity($user_data);
     $user_mapper = new \App\Backend\UserMapper($this->db);
-    $user_mapper->save($ticket);
+    $user_mapper->save($user);
 
     $response->getBody()->write("Hello, " . $user_data['username']);
     return $response;
