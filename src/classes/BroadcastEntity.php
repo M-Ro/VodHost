@@ -1,0 +1,49 @@
+<?php
+namespace App\Backend;
+
+class BroadcastEntity
+{
+	protected $id;
+    protected $user_id;
+	protected $title;
+	protected $length;
+	protected $visibility;
+
+	/**
+     * Construct class from data array
+     * @param array $data The data to use to create
+     */
+    public function __construct(array $data) {
+        // no id if we're creating
+        if(isset($data['id'])) {
+            $this->id = $data['id'];
+        }
+
+        $this->user_id = $data['user_id'];
+        $this->title = $data['title'];
+        $this->length = $data['length'];
+        $this->visibility = $data['visibility'];
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getUserId() {
+        return $this->user_id;
+    }
+
+    public function getTitle() {
+        return $this->title;
+    }
+
+    public function getLength() {
+        return $this->length;
+    }
+
+    public function getVisibility() {
+        return $this->visibility;
+    }
+}
+
+?>

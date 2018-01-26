@@ -39,7 +39,7 @@ class UserMapper extends Mapper
      * @param int $user_id The ID of the user
      * @return UserEntity  The User
      */
-	public function getTicketById($user_id) {
+	public function getUserById($user_id) {
         $sql = "SELECT id, username, email, password from users
                     where id = :user_id";
 

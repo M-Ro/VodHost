@@ -67,6 +67,9 @@ $app->get('/admin_createdb', function (Request $request, Response $response, arr
     $user_mapper = new \App\Backend\UserMapper($this->db);
     $user_mapper->createUsersTable();
 
+    $broadcast_mapper = new \App\Backend\BroadcastMapper($this->db);
+    $broadcast_mapper->createBroadcastsTable();
+
     $response->getBody()->write("Done");
     return $response;
 });
