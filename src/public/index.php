@@ -40,8 +40,9 @@ $container['db'] = function ($c) {
 
 $app->get('/', function (Request $request, Response $response, array $args) {
     $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Backend\UserSessionHandler::getUsername($request);
 
-    $response = $this->view->render($response, 'index.phtml', ['loggedIn' => $loggedIn]);
+    $response = $this->view->render($response, 'index.phtml', ['loggedIn' => $loggedIn, 'username' => $username,]);
     return $response;
 });
 
@@ -141,11 +142,14 @@ $app->post('/attempt_login', function (Request $request, Response $response, arr
     {
         $this->logger->addInfo("Password matched. " . PHP_EOL);
         $response = \App\Backend\UserSessionHandler::login($response, $user);
+        $response = $response->withRedirect("/");
     }
     else
+    {
+        $response = $response->withRedirect("/login?login=failed");
         $this->logger->addInfo("Password did not match. " . PHP_EOL);
+    }
 
-    $response = $response->withRedirect("/");
     return $response;
 });
 

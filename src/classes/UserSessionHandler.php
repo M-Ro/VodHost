@@ -39,7 +39,9 @@ use Dflydev\FigCookies\SetCookie;
 
 		public static function GetUsername(\Slim\Http\Request $request)
 		{
-
+			$username = FigRequestCookies::get($request, 'username');
+			if($username)
+				return $username->getValue();
 		}
 
 		public static function GetEmail(\Slim\Http\Request $request)
