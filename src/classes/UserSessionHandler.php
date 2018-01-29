@@ -11,14 +11,40 @@ use Dflydev\FigCookies\SetCookie;
 		public static function isLoggedIn(\Slim\Http\Request $request)
 		{
 			$validLogin = FigRequestCookies::get($request, 'logged_in');
+
 			if($validLogin == null || $validLogin->getValue() == false)
 				return false;
 			else
 				return true;
 		}
 
-		protected static $username = '';
-		protected static $validLogin = '';
-	}
+		/* Removes the user session as an effective log-out. */
+		public static function Purge(\Slim\Http\Response $response)
+		{
+			$response = FigResponseCookies::expire($response, 'username');
+			$response = FigResponseCookies::expire($response, 'email');
+			$response = FigResponseCookies::expire($response, 'logged_in');
 
+			return $response;
+		}
+
+		public static function Login(\Slim\Http\Response $response, UserEntity $user)
+		{
+			$response = FigResponseCookies::set($response, SetCookie::create('username')->withValue($user->getUsername())->rememberForever());
+			$response = FigResponseCookies::set($response, SetCookie::create('email')->withValue($user->getEmail())->rememberForever());
+			$response = FigResponseCookies::set($response, SetCookie::create('logged_in')->withValue(true)->rememberForever());
+
+			return $response;
+		}
+
+		public static function GetUsername(\Slim\Http\Request $request)
+		{
+
+		}
+
+		public static function GetEmail(\Slim\Http\Request $request)
+		{
+
+		}
+	}
 ?>

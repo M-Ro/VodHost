@@ -8,8 +8,8 @@ class UserMapper extends Mapper
 	{
         $sql = "CREATE TABLE IF NOT EXISTS users (
 	        id INTEGER PRIMARY KEY,
-	        username TEXT NOT NULL,
-	        email TEXT NOT NULL,
+	        username TEXT UNIQUE,
+	        email TEXT UNIQUE,
 	        password TEXT NOT NULL);";
 
 	    $this->db->exec($sql);
@@ -47,8 +47,30 @@ class UserMapper extends Mapper
         $result = $stmt->execute(["user_id" => $user_id]);
 
         if($result) {
-            return new UserEntity($stmt->fetch());
+            return new UserEntity($stmt->fetch(\PDO::FETCH_ASSOC));
         }
+    }
+
+    /**
+     * Get user by Email
+     *
+     * @param str $user_email The email address of the user
+     * @return UserEntity  The User
+     */
+    public function getUserByEmail($user_email) {
+        $sql = "SELECT id, username, email, password from users
+                    where email = :user_email";
+
+        $stmt = $this->db->prepare($sql);
+        $result = $stmt->execute(["user_email" => $user_email]);
+
+        if($result) {
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if($row)
+                return new UserEntity($row);
+        }
+
+        return null;
     }
 
     /**
@@ -58,7 +80,7 @@ class UserMapper extends Mapper
      */
     public function save(UserEntity $user) {
         $sql = "insert into users (username, email, password) values
-            (:email, :username, :password)";
+            (:username, :email, :password)";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
