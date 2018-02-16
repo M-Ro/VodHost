@@ -12,12 +12,15 @@ if (PHP_SAPI == 'cli-server') {
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Dflydev\FigCookies\Cookie;
+use Slim\Http\UploadedFile;
 
 require 'vendor/autoload.php';
 require 'src/public/settings.php';
 
 $app = new \Slim\App(['settings' => $config]);;
 $container = $app->getContainer();
+
+$container['upload_directory'] = __DIR__ . '/uploads';
 
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 
@@ -67,6 +70,19 @@ $app->get('/register', function (Request $request, Response $response, array $ar
     }
 
     $response = $this->view->render($response, 'register.phtml', ['loggedIn' => $loggedIn]);
+    return $response;
+});
+
+$app->get('/upload', function (Request $request, Response $response, array $args) {
+    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Backend\UserSessionHandler::getUsername($request);
+    if(!$loggedIn)
+    {
+        $response = $response->withRedirect("/");
+        return $response;
+    }
+
+    $response = $this->view->render($response, 'upload.phtml', ['loggedIn' => $loggedIn, 'username' => $username]);
     return $response;
 });
 
@@ -152,5 +168,45 @@ $app->post('/attempt_login', function (Request $request, Response $response, arr
 
     return $response;
 });
+
+$app->post('/api/upload', function (Request $request, Response $response, array $args) {
+    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Backend\UserSessionHandler::getUsername($request);
+    if(!$loggedIn)
+    {
+        $this->logger->addInfo("/api/upload: " . "Invalid Session" . PHP_EOL);
+        $response->write("Invalid Session");
+        return $response;
+    }
+
+    $directory = $this->get('upload_directory');
+    $this->logger->addInfo("/api/upload: " . "upload_directory: " . $directory . PHP_EOL);
+
+    $data = $request->getParsedBody();
+
+    $chunkDir = $directory . DIRECTORY_SEPARATOR . $data['flowIdentifier'];
+    $chunkFile = $chunkDir.'/chunk.part' . $data['flowChunkNumber'];
+
+    if (!is_dir($chunkDir)) {
+        mkdir($chunkDir, 0777, true); // FIXME proper permissions - 750?
+    }
+
+    $this->logger->addInfo("/api/upload: " . "chunkFile: " . $chunkFile . PHP_EOL);
+
+    // Get the actual uploaded file and move it to the chunk location
+    $uploadedFiles = $request->getUploadedFiles();
+    $uploadedFile = $uploadedFiles['file'];
+    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+        try {
+            $uploadedFile->moveTo($chunkFile);
+        } catch (Exception $e) {
+            $this->logger->addInfo("/api/upload: " . "Exception: " . $e->getMessage() . PHP_EOL);
+        }
+
+    }
+
+    return $response;
+});
+
 
 $app->run();

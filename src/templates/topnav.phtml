@@ -7,8 +7,14 @@
             <li class="pure-menu-item"><a href="/login" class="pure-menu-link">Login</a></li>
             <li class="pure-menu-item"><a href="/register" class="pure-menu-link">Register</a></li>
         	<?php else: ?>
-			<li class="pure-menu-item"><a href="/account" class="pure-menu-link"><?php echo $username ?></a></li>
-        	<li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Logout</a></li>
+            <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+            <a href="/account" id="menuLink1" class="pure-menu-link"><?php echo $username ?></a>
+            <ul class="pure-menu-children">
+                <li class="pure-menu-item"><a href="/upload" class="pure-menu-link">Upload</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Account</a></li>
+                <li class="pure-menu-item"><a href="/logout" class="pure-menu-link">Logout</a></li>
+            </ul>
+            </li>
             <?php endif; ?>
         </ul>
     </div>
