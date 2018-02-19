@@ -21,6 +21,7 @@ $app = new \Slim\App(['settings' => $config]);;
 $container = $app->getContainer();
 
 $container['upload_directory'] = __DIR__ . '/uploads';
+$container['temp_directory'] = __DIR__ . '/temp';
 
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 
@@ -179,33 +180,51 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
         return $response;
     }
 
-    $directory = $this->get('upload_directory');
-    $this->logger->addInfo("/api/upload: " . "upload_directory: " . $directory . PHP_EOL);
+    $req = new \Flow\Request();
 
-    $data = $request->getParsedBody();
+    $dest = $this->get('upload_directory');
+    $chunks_temp_folder = $this->get('temp_directory');
 
-    $chunkDir = $directory . DIRECTORY_SEPARATOR . $data['flowIdentifier'];
-    $chunkFile = $chunkDir.'/chunk.part' . $data['flowChunkNumber'];
+    if (!is_dir($chunks_temp_folder) || !is_writable($chunks_temp_folder)) {
+      $this->logger->addInfo("/api/upload: " . "Error: " . $chunks_temp_folder . "not writable" . PHP_EOL);
 
-    if (!is_dir($chunkDir)) {
-        mkdir($chunkDir, 0777, true); // FIXME proper permissions - 750?
+      return $response->withStatus(500); // we dun goofed
     }
 
-    $this->logger->addInfo("/api/upload: " . "chunkFile: " . $chunkFile . PHP_EOL);
+    if (!is_dir($dest) || !is_writable($dest)) {
+      $this->logger->addInfo("/api/upload: " . "Error: " . $dest . "not writable" . PHP_EOL);
 
-    // Get the actual uploaded file and move it to the chunk location
-    $uploadedFiles = $request->getUploadedFiles();
-    $uploadedFile = $uploadedFiles['file'];
-    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        try {
-            $uploadedFile->moveTo($chunkFile);
-        } catch (Exception $e) {
-            $this->logger->addInfo("/api/upload: " . "Exception: " . $e->getMessage() . PHP_EOL);
-        }
-
+      return $response->withStatus(500); // we dun goofed
     }
 
-    return $response;
+    $config = new \Flow\Config(['tempDir' => $chunks_temp_folder ]);
+
+    $dest .= DIRECTORY_SEPARATOR . $req->getFileName();
+
+    $message = [
+      'type' => 'error',
+      'message' =>'no data'
+    ];
+
+    if (\Flow\Basic::save($dest, $config, $req)) {
+
+      $file = $req->getFile();
+
+      $message = [
+        "type" => "success",
+        "name" => $file['name'],
+        "filetype" => $file['type'],
+        "error" => $file['error'],
+        "size" => $file['size'],
+        "fullpath" => $dest
+      ];
+
+      $this->logger->addInfo("/api/upload: " . "Saving file: " . $file['name'] . PHP_EOL);
+    } else {
+      //return $response->withStatus(400);
+    }
+
+    return $response->withJson($message, 200);
 });
 
 
