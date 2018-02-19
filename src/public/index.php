@@ -7,6 +7,8 @@ if (PHP_SAPI == 'cli-server') {
     if (is_file($file)) {
         return false;
     }
+
+    error_reporting(E_ALL); // debug
 }
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
@@ -176,56 +178,14 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
     if(!$loggedIn)
     {
         $this->logger->addInfo("/api/upload: " . "Invalid Session" . PHP_EOL);
-        $response->write("Invalid Session");
+        $response->withStatus(403);
         return $response;
     }
 
-    $req = new \Flow\Request();
+    $uploadHandler = new \App\Backend\UploadHandler(
+        $this->get('upload_directory'), $this->get('temp_directory'), $this->logger);
 
-    $dest = $this->get('upload_directory');
-    $chunks_temp_folder = $this->get('temp_directory');
-
-    if (!is_dir($chunks_temp_folder) || !is_writable($chunks_temp_folder)) {
-      $this->logger->addInfo("/api/upload: " . "Error: " . $chunks_temp_folder . "not writable" . PHP_EOL);
-
-      return $response->withStatus(500); // we dun goofed
-    }
-
-    if (!is_dir($dest) || !is_writable($dest)) {
-      $this->logger->addInfo("/api/upload: " . "Error: " . $dest . "not writable" . PHP_EOL);
-
-      return $response->withStatus(500); // we dun goofed
-    }
-
-    $config = new \Flow\Config(['tempDir' => $chunks_temp_folder ]);
-
-    $dest .= DIRECTORY_SEPARATOR . $req->getFileName();
-
-    $message = [
-      'type' => 'error',
-      'message' =>'no data'
-    ];
-
-    if (\Flow\Basic::save($dest, $config, $req)) {
-
-      $file = $req->getFile();
-
-      $message = [
-        "type" => "success",
-        "name" => $file['name'],
-        "filetype" => $file['type'],
-        "error" => $file['error'],
-        "size" => $file['size'],
-        "fullpath" => $dest
-      ];
-
-      $this->logger->addInfo("/api/upload: " . "Saving file: " . $file['name'] . PHP_EOL);
-    } else {
-      //return $response->withStatus(400);
-    }
-
-    return $response->withJson($message, 200);
+    return $uploadHandler->handleChunk($request, $response);
 });
-
 
 $app->run();
