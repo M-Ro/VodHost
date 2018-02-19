@@ -61,7 +61,7 @@ class BroadcastMapper extends Mapper
      */
     public function save(BroadcastEntity $broadcast) {
         $sql = "insert into broadcasts (user_id, title, filename, length, visibility) values
-            (:user_id, :title, :length, :visibility)";
+            (:user_id, :title, :filename, :length, :visibility)";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([

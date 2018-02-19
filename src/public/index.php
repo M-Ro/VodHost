@@ -183,7 +183,7 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
     }
 
     $uploadHandler = new \App\Backend\UploadHandler(
-        $this->get('upload_directory'), $this->get('temp_directory'), $this->logger);
+        $this->get('upload_directory'), $this->get('temp_directory'), $this->logger, $this->db);
 
     return $uploadHandler->handleChunk($request, $response);
 });
