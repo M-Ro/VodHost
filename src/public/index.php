@@ -91,7 +91,29 @@ $app->get('/upload', function (Request $request, Response $response, array $args
 
 $app->get('/view/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
-    $response->getBody()->write("Hello, $id");
+    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Backend\UserSessionHandler::getUsername($request);
+
+    $response_vars = [
+        'loggedIn' => $loggedIn,
+        'username' => $username
+    ];
+
+    $bmapper = new \App\Backend\BroadcastMapper($this->db);
+    $bentity = $bmapper->getBroadcastById($id);
+    if(!$bentity)
+    {
+        $this->logger->addInfo("/view/ invalid broadcast id: " . $id . PHP_EOL);
+    }
+    else
+    {
+        // fixme set uploaddir in config
+        $response_vars['media_path'] = '/uploads' . DIRECTORY_SEPARATOR . $bentity->getFilename();
+        $response_vars['media_title'] = $bentity->getTitle();
+    }
+
+    $response = $this->view->render($response, 'view.phtml', $response_vars);
+
     return $response;
 });
 

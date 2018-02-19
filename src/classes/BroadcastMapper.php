@@ -50,7 +50,9 @@ class BroadcastMapper extends Mapper
         $result = $stmt->execute(["broadcast_id" => $broadcast_id]);
 
         if($result) {
-            return new BroadcastEntity($stmt->fetch());
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if($row)
+                return new BroadcastEntity($row);
         }
     }
 

@@ -121,6 +121,27 @@ td, th {
     width: 100%;
 }
 
+.header {
+    margin-bottom: 3em;
+}
+
+.headershim {
+    padding: 2em;
+}
+
+.videoholder{
+    position: relative;
+    margin: 0 auto;
+    width:80%;
+    min-width:720px;
+    max-width:1280px;
+    text-align: left;
+}
+
+.videoholder video {
+  
+}
+
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some
