@@ -6,6 +6,7 @@ class BroadcastEntity
 	protected $id;
     protected $user_id;
 	protected $title;
+    protected $filename;
 	protected $length;
 	protected $visibility;
 
@@ -21,6 +22,7 @@ class BroadcastEntity
 
         $this->user_id = $data['user_id'];
         $this->title = $data['title'];
+        $this->filename = $data['filename'];
         $this->length = $data['length'];
         $this->visibility = $data['visibility'];
     }
@@ -35,6 +37,10 @@ class BroadcastEntity
 
     public function getTitle() {
         return $this->title;
+    }
+
+    public function getFilename() {
+        return $this->filename;
     }
 
     public function getLength() {

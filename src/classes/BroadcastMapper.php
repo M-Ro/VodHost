@@ -10,6 +10,7 @@ class BroadcastMapper extends Mapper
 	        id INTEGER PRIMARY KEY,
             user_id INTEGER,
 	        title TEXT NOT NULL,
+            filename TEXT NOT NULL,
 	        length INTEGER NOT NULL,
 	        visibility INTEGER NOT NULL,
             FOREIGN KEY(user_id) REFERENCES user(id));";
@@ -22,7 +23,7 @@ class BroadcastMapper extends Mapper
 	 */
 	public function getBroadcasts()
 	{
-		$sql = "SELECT id, user_id, title, length, visibility
+		$sql = "SELECT id, user_id, title, filename, length, visibility
             from broadcasts;";
 
         $stmt = $this->db->query($sql);
@@ -42,7 +43,7 @@ class BroadcastMapper extends Mapper
      * @return BroadcastEntity  The Broadcast
      */
 	public function getBroadcastById($broadcast_id) {
-        $sql = "SELECT id, user_id, title, length, visibility from broadcasts
+        $sql = "SELECT id, user_id, title, filename, length, visibility from broadcasts
                     where id = :broadcast_id";
 
         $stmt = $this->db->prepare($sql);
@@ -59,13 +60,14 @@ class BroadcastMapper extends Mapper
      * @param BroadcastEntity $broadcast The BroadcastEntity object
      */
     public function save(BroadcastEntity $broadcast) {
-        $sql = "insert into broadcasts (user_id, title, length, visibility) values
+        $sql = "insert into broadcasts (user_id, title, filename, length, visibility) values
             (:user_id, :title, :length, :visibility)";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
             "user_id" => $broadcast->getUserId(),
             "title" => $broadcast->getTitle(),
+            "filename" => $broadcast->getFilename(),
             "length" => $broadcast->getLength(),
             "visibility" => $broadcast->getVisibility()
         ]);
