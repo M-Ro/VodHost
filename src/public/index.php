@@ -17,8 +17,8 @@ require 'src/public/settings.php';
 $app = new \Slim\App(['settings' => $config]);;
 $container = $app->getContainer();
 
-$container['upload_directory'] = __DIR__ . '/uploads';
-$container['temp_directory'] = __DIR__ . '/temp';
+$container['upload_directory'] = $config['upload_directory'];
+$container['temp_directory'] = $config['temp_directory'];
 
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 
