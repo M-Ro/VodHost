@@ -1,7 +1,7 @@
 <?php
 namespace App\Backend;
 
-class BroadcastEntity
+class BroadcastEntity implements \JsonSerializable 
 {
 	protected $id;
     protected $user_id;
@@ -25,6 +25,10 @@ class BroadcastEntity
         $this->filename = $data['filename'];
         $this->length = $data['length'];
         $this->visibility = $data['visibility'];
+    }
+
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
     }
 
     public function getId() {

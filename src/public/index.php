@@ -210,4 +210,18 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
     return $uploadHandler->handleChunk($request, $response);
 });
 
+
+/** Return a json response containing all recent broadcasts to the client.
+ * 
+ */
+// FIXME: This needs to return recentvideos, currently returns all videos
+$app->get('/api/fetch/recentvideos', function (Request $request, Response $response, array $args) {
+    $bmapper = new \App\Backend\BroadcastMapper($this->db);
+
+    $broadcasts = $bmapper->getBroadcasts();
+    $message = json_encode($broadcasts);
+
+    return $response->withJson($message, 200);
+});
+
 $app->run();

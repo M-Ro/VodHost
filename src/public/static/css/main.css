@@ -142,6 +142,45 @@ td, th {
   
 }
 
+/* For main page / video lists */
+
+.videolist {
+  display:                 flex;
+  display:                 -webkit-flex; /* Safari 8 */
+  flex-wrap:               wrap;
+  -webkit-flex-wrap:       wrap;         /* Safari 8 */
+  justify-content:         center;
+  -webkit-justify-content: center;       /* Safari 8 */
+}
+
+.videolist ul {
+    list-style-type: none;
+    overflow: hidden;
+}
+
+.videolist ul li {
+    float:left;
+}
+
+.videolist ul li h4 {
+    margin-top: 0em;
+}
+
+
+/* the 'card' div representing a video thumbnail + title */
+.videocard
+{
+    width:320px;
+    height:240px;
+    margin: 1em;
+}
+
+.videocard img
+{
+    width:320px;
+    height:180px;
+}
+
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some

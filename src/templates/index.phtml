@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Video-on-Demand Host</title>
@@ -7,11 +8,40 @@
 
 	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
 	<link rel="stylesheet" href="/static/css/main.css">
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
 </head>
+
+<script>
+	var app = angular.module("ng-frontPage", []);
+
+	app.controller("frontPageCtrl", function($scope, $http) {
+		$http.get("api/fetch/recentvideos")
+	    .then(function(response) {
+	    	$scope.broadcasts = $scope.$eval(response.data);
+	    });
+});
+</script>
 
 <body>
 
 <?php include 'src/templates/topnav.phtml' ?>
+
+<div class="headershim"><h2>Recent Uploads</h2></div>
+
+<div ng-app="ng-frontPage" ng-controller="frontPageCtrl">
+
+	<div class="videolist">
+		<ul>
+			<li ng-repeat="video in broadcasts">
+				<div class="videocard">
+						<a href="/view/{{video.id}}"><img src="/thumbs/{{video.id}}_thumb.png"></img>
+						<h4>{{video.title}}</h4></a>
+				</div>
+			</li>
+		</ul>
+	</div>
+</div>
 
 </body>
 </html>
