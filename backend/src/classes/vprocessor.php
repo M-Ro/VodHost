@@ -17,11 +17,11 @@ class VProcessor
 	private $video;
 
 	/**
-     * Handles initialization of the class - creates an FFMpeg decoder instance and
-     * loads the specified video file.
-     * @param string $path - path of videofile
-     * @throws Exception if provided argument is invalid or file cannot be accessed.
-     */
+	 * Handles initialization of the class - creates an FFMpeg decoder instance and
+	 * loads the specified video file.
+	 * @param string $path - path of videofile
+	 * @throws Exception if provided argument is invalid or file cannot be accessed.
+	 */
 	public function __construct(string $path) {
 		if(!isset($path) || trim($path) === '')
 			throw new \Exception(__METHOD__ . ': $path is null or empty');
@@ -41,11 +41,11 @@ class VProcessor
 	}
 
 	/**
-     * Exports a single imageframe representing the first frame of the video stream
-     * for thumbnailing
-     * @param array $settings - settings array - 'target' required
-     * @throws Exception if provided argument is invalid or required fields missing.
-     */
+	 * Exports a single imageframe representing the first frame of the video stream
+	 * for thumbnailing
+	 * @param array $settings - settings array - 'target' required
+	 * @throws Exception if provided argument is invalid or required fields missing.
+	 */
 	public function generateStaticThumbnail(array $settings) {
 		if(!isset($settings) || empty($settings))
 			throw new \Exception(__METHOD__ . ':invalid settings');
@@ -58,11 +58,11 @@ class VProcessor
 	}
 
 	/**
-     * Exports a series of imageframes spread evenly throughout the video for
-     * thumbnailing
-     * @param array $settings - settings array - 'target', 'thumbcount' required
-     * @throws Exception if provided argument is invalid or required fields missing.
-     */
+	 * Exports a series of imageframes spread evenly throughout the video for
+	 * thumbnailing
+	 * @param array $settings - settings array - 'target', 'thumbcount' required
+	 * @throws Exception if provided argument is invalid or required fields missing.
+	 */
 	public function generateThumbnailSet(array $settings) {
 		if(!isset($settings) || empty($settings))
 			throw new \Exception(__METHOD__ . ':invalid settings');
@@ -93,11 +93,11 @@ class VProcessor
 	}
 
 	/**
-     * Transfers the video and audio streams in a non-MP4 file into an MP4 container
-     * 	suitable for web streaming.
-     * @param array $settings - settings array - 'target', 'output_filename' required
-     * @throws Exception if provided argument is invalid or required fields missing.
-     */
+	 * Transfers the video and audio streams in a non-MP4 file into an MP4 container
+	 * 	suitable for web streaming.
+	 * @param array $settings - settings array - 'target', 'output_filename' required
+	 * @throws Exception if provided argument is invalid or required fields missing.
+	 */
 	public function transmuxToMP4(array $settings) {
 		if(!isset($settings) || empty($settings))
 			throw new \Exception(__METHOD__ . ':invalid settings');
@@ -118,18 +118,18 @@ class VProcessor
 	}
 
 	/**
-     * @stub
-     */
+	 * @stub
+	 */
 	public function transcode(array $settings) {
 		throw new \Exception(__METHOD__ . "Not implemented yet");
 	}
 
 	/**
-     * Scales images to a specified size. Used to scale the full frames
-     * ffmpeg exports into thumbnail sized images.
-     * @param array $settings - settings array - 'width', 'height', 'target' required
-     * @throws Exception if provided argument is invalid or required fields missing.
-     */
+	 * Scales images to a specified size. Used to scale the full frames
+	 * ffmpeg exports into thumbnail sized images.
+	 * @param array $settings - settings array - 'width', 'height', 'target' required
+	 * @throws Exception if provided argument is invalid or required fields missing.
+	 */
 	public function scaleThumbnails(array $settings) {
 		if(!isset($settings) || empty($settings))
 			throw new \Exception(__METHOD__ . ':invalid settings');
