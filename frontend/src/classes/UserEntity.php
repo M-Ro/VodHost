@@ -3,18 +3,19 @@ namespace App\Backend;
 
 class UserEntity
 {
-	protected $id;
-	protected $username;
-	protected $email;
-	protected $password;
+    protected $id;
+    protected $username;
+    protected $email;
+    protected $password;
 
-	/**
+    /**
      * Construct class from data array
      * @param array $data The data to use to create
      */
-    public function __construct(array $data) {
+    public function __construct(array $data)
+    {
         // no id if we're creating
-        if(isset($data['id'])) {
+        if (isset($data['id'])) {
             $this->id = $data['id'];
         }
 
@@ -23,21 +24,23 @@ class UserEntity
         $this->password = $data['password'];
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 }
-
-?>

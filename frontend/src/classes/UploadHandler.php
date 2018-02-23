@@ -8,14 +8,15 @@ class UploadHandler
     protected $logger;
     protected $db;
 
-	/**
+    /**
      * Construct class from data array
      * @param $uploaddir - Target directory for uploads
      * @param $chunkdir - Temp directory for upload chunks
      * @param $logger - Reference to monologger.
      * @param $logger - Reference to database.
      */
-    public function __construct($uploaddir, $chunkdir, $logger, $db) {
+    public function __construct($uploaddir, $chunkdir, $logger, $db)
+    {
         $this->dir_upload = $uploaddir;
         $this->dir_chunks = $chunkdir;
         $this->logger = $logger;
@@ -31,7 +32,8 @@ class UploadHandler
      *
      * @return Response - Returns the response after being modified
      */
-    public function handleChunk(\Slim\Http\Request $request, \Slim\Http\Response $response) {
+    public function handleChunk(\Slim\Http\Request $request, \Slim\Http\Response $response)
+    {
         $dir_chunks = $this->dir_chunks;
         $dir_upload = $this->dir_upload;
 
@@ -98,8 +100,7 @@ class UploadHandler
     {
         /* Get UserID of file uploader */
         $uid = UserSessionHandler::getId($request);
-        if($uid < 0) // This should not be possible
-        {
+        if ($uid < 0) { // This should not be possible
             $this->logger->addInfo("UploadHandler: " . "Warning: Invalid user uploaded file" . PHP_EOL);
             return;
         }
@@ -115,16 +116,12 @@ class UploadHandler
         $broadcast = new BroadcastEntity($broadcast_data);
 
         /* Serialize entity to database via mapper */
-        if($broadcast)
-        {
+        if ($broadcast) {
             $bmapper = new BroadcastMapper($this->db);
-            if($bmapper)
-            {
+            if ($bmapper) {
                 $bmapper->save($broadcast);
                 return true;
             }
         }
     }
 }
-
-?>

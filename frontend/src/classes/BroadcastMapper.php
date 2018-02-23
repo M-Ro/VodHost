@@ -3,9 +3,9 @@ namespace App\Backend;
 
 class BroadcastMapper extends Mapper
 {
-	/* Initial migration */
-	public function createBroadcastsTable()
-	{
+    /* Initial migration */
+    public function createBroadcastsTable()
+    {
         $sql = "CREATE TABLE IF NOT EXISTS broadcasts (
 	        id INTEGER PRIMARY KEY,
             user_id INTEGER,
@@ -15,44 +15,46 @@ class BroadcastMapper extends Mapper
 	        visibility INTEGER NOT NULL,
             FOREIGN KEY(user_id) REFERENCES user(id));";
 
-	    $this->db->exec($sql);
-	}	
+        $this->db->exec($sql);
+    }
 
-	/** Return all broadcasts in database
-	 *  @return array[BroadcastEntity] Array of Broadcasts
-	 */
-	public function getBroadcasts()
-	{
-		$sql = "SELECT id, user_id, title, filename, length, visibility
+    /** Return all broadcasts in database
+     *  @return array[BroadcastEntity] Array of Broadcasts
+     */
+    public function getBroadcasts()
+    {
+        $sql = "SELECT id, user_id, title, filename, length, visibility
             from broadcasts;";
 
         $stmt = $this->db->query($sql);
         
         $results = [];
-        while($row = $stmt->fetch()) {
+        while ($row = $stmt->fetch()) {
             $results[] = new BroadcastEntity($row);
         }
 
         return $results;
-	}
+    }
 
-	/**
+    /**
      * Get broadcast by ID
      *
      * @param int $broadcast_id The ID of the broadcast
      * @return BroadcastEntity  The Broadcast
      */
-	public function getBroadcastById($broadcast_id) {
+    public function getBroadcastById($broadcast_id)
+    {
         $sql = "SELECT id, user_id, title, filename, length, visibility from broadcasts
                     where id = :broadcast_id";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute(["broadcast_id" => $broadcast_id]);
 
-        if($result) {
+        if ($result) {
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-            if($row)
+            if ($row) {
                 return new BroadcastEntity($row);
+            }
         }
     }
 
@@ -61,7 +63,8 @@ class BroadcastMapper extends Mapper
      *
      * @param BroadcastEntity $broadcast The BroadcastEntity object
      */
-    public function save(BroadcastEntity $broadcast) {
+    public function save(BroadcastEntity $broadcast)
+    {
         $sql = "insert into broadcasts (user_id, title, filename, length, visibility) values
             (:user_id, :title, :filename, :length, :visibility)";
 
@@ -74,10 +77,8 @@ class BroadcastMapper extends Mapper
             "visibility" => $broadcast->getVisibility()
         ]);
 
-        if(!$result) {
+        if (!$result) {
             throw new Exception("could not save record");
         }
     }
 }
-
-?>

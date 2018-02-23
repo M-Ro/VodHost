@@ -12,8 +12,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 
 $app->get('/login', function (Request $request, Response $response, array $args) {
     $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
-    if($loggedIn == true)
-    {
+    if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
     }
@@ -24,8 +23,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
     $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
-    if($loggedIn == true)
-    {
+    if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
     }
@@ -37,8 +35,7 @@ $app->get('/register', function (Request $request, Response $response, array $ar
 $app->get('/upload', function (Request $request, Response $response, array $args) {
     $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
     $username = \App\Backend\UserSessionHandler::getUsername($request);
-    if(!$loggedIn)
-    {
+    if (!$loggedIn) {
         $response = $response->withRedirect("/");
         return $response;
     }
@@ -59,12 +56,9 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
 
     $bmapper = new \App\Backend\BroadcastMapper($this->db);
     $bentity = $bmapper->getBroadcastById($id);
-    if(!$bentity)
-    {
+    if (!$bentity) {
         $this->logger->addInfo("/view/ invalid broadcast id: " . $id . PHP_EOL);
-    }
-    else
-    {
+    } else {
         // fixme set uploaddir in config
         $response_vars['media_path'] = '/uploads' . DIRECTORY_SEPARATOR . $bentity->getFilename();
         $response_vars['media_title'] = $bentity->getTitle();
@@ -110,7 +104,7 @@ $app->post('/attempt_signup', function (Request $request, Response $response, ar
     // Hash password
     $user_data['password'] = password_hash($user_data['password'], PASSWORD_DEFAULT);
 
-    $this->logger->addInfo("Attempting to create user " . $user_data['username'] . " - " . $user_data['email'] . PHP_EOL);
+    $this->logger->addInfo("Creating user " . $user_data['username'] . " - " . $user_data['email'] . PHP_EOL);
 
     $user = new \App\Backend\UserEntity($user_data);
     $user_mapper = new \App\Backend\UserMapper($this->db);
@@ -134,23 +128,18 @@ $app->post('/attempt_login', function (Request $request, Response $response, arr
     $user_mapper = new \App\Backend\UserMapper($this->db);
     $user = $user_mapper->getUserByEmail($user_data['email']);
 
-    if(!$user)
+    if (!$user) {
         $this->logger->addInfo("Could not find user matching email address: " . $user_data['email'] . PHP_EOL);
+    }
 
-    if(password_verify($user_data['password'], $user->getPassword()))
-    {
+    if (password_verify($user_data['password'], $user->getPassword())) {
         $this->logger->addInfo("Password matched. " . PHP_EOL);
         $response = \App\Backend\UserSessionHandler::login($response, $user);
         $response = $response->withRedirect("/");
-    }
-    else
-    {
+    } else {
         $response = $response->withRedirect("/login?login=failed");
         $this->logger->addInfo("Password did not match. " . PHP_EOL);
     }
 
     return $response;
 });
-
-
-?>

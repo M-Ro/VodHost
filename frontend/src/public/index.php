@@ -14,7 +14,8 @@ if (PHP_SAPI == 'cli-server') {
 require 'vendor/autoload.php';
 require 'src/public/settings.php';
 
-$app = new \Slim\App(['settings' => $config]);;
+$app = new \Slim\App(['settings' => $config]);
+
 $container = $app->getContainer();
 
 $container['upload_directory'] = $config['upload_directory'];
@@ -22,7 +23,7 @@ $container['temp_directory'] = $config['temp_directory'];
 
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 
-$container['logger'] = function($c) {
+$container['logger'] = function ($c) {
     $logger = new \Monolog\Logger('Log');
     $file_handler = new \Monolog\Handler\StreamHandler('logs/app.log');
     $logger->pushHandler($file_handler);
@@ -44,5 +45,3 @@ require 'src/routes/web.php';
 require 'src/routes/api.php';
 
 $app->run();
-
-?>
