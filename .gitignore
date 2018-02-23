@@ -1,6 +1,3 @@
-vendor/*
-logs/*
-src/public/settings.php
+frontend/vendor
+backend/vendor/*
 composer.phar
-run.sh
-db/*
