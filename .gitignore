@@ -1,3 +1,4 @@
 frontend/vendor
+frontend/src/settings.php
 backend/vendor/*
 composer.phar
