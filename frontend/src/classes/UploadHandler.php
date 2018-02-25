@@ -39,13 +39,13 @@ class UploadHandler
 
         /* Validate the chunk directory and target directory are writable */
         if (!is_dir($dir_chunks) || !is_writable($dir_chunks)) {
-            $this->logger->addInfo("UploadHandler: " . "Error: " . $dir_chunks . "not writable" . PHP_EOL);
+            $this->logger->critical("UploadHandler: " . $dir_chunks . " not writable" . PHP_EOL);
 
             return $response->withStatus(500); // we dun goofed
         }
 
         if (!is_dir($dir_upload) || !is_writable($dir_upload)) {
-            $this->logger->addInfo("UploadHandler: " . "Error: " . $dir_upload . "not writable" . PHP_EOL);
+            $this->logger->critical("UploadHandler: " . $dir_upload . " not writable" . PHP_EOL);
 
             return $response->withStatus(500); // we dun goofed
         }
@@ -80,7 +80,7 @@ class UploadHandler
                 "fullpath" => $dest
             ];
 
-            $this->logger->addInfo("UploadHandler: " . "Saving file: " . $file['name'] . PHP_EOL);
+            $this->logger->addInfo("UploadHandler: Storing for processing: " . $file['name'] . PHP_EOL);
         } else {
             // Do nothing for now, file has not finished uploading
         }

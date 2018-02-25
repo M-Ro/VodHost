@@ -6,9 +6,7 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
     $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
     $username = \App\Backend\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
-        $this->logger->addInfo("/api/upload: " . "Invalid Session" . PHP_EOL);
-        $response->withStatus(403);
-        return $response;
+        return $response->withStatus(403);
     }
 
     $uploadHandler = new \App\Backend\UploadHandler(
@@ -26,7 +24,6 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
  */
 // FIXME: This needs to return recentvideos, currently returns all videos
 $app->get('/api/fetch/recentvideos', function (Request $request, Response $response, array $args) {
-    $this->logger->addInfo("did we get here" . PHP_EOL);
     $bmapper = new \App\Backend\BroadcastMapper($this->db);
 
     $broadcasts = $bmapper->getBroadcasts();

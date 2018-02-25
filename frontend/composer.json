@@ -6,7 +6,8 @@
         "monolog/monolog": "^1.23",
 		"slim/php-view": "^2.2",
 		"dflydev/fig-cookies": "^1.0",
-		"flowjs/flow-php-server": "^1.0"
+		"flowjs/flow-php-server": "^1.0",
+		"predis/predis": "^1.1"
     },
     "autoload": {
         "psr-4": {

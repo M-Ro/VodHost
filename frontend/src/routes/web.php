@@ -122,23 +122,23 @@ $app->post('/attempt_login', function (Request $request, Response $response, arr
     $user_data['email'] = filter_var($data['email'], FILTER_SANITIZE_STRING);
     $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
 
-    $this->logger->addInfo("User attempting to login: " . $user_data['email'] . PHP_EOL);
+    $this->logger->debug("User attempting to login: " . $user_data['email'] . PHP_EOL);
 
     /* Attempt to find user by email address then verify password matches */
     $user_mapper = new \App\Backend\UserMapper($this->db);
     $user = $user_mapper->getUserByEmail($user_data['email']);
 
     if (!$user) {
-        $this->logger->addInfo("Could not find user matching email address: " . $user_data['email'] . PHP_EOL);
+        $this->logger->debug("Could not find user matching email address: " . $user_data['email'] . PHP_EOL);
     }
 
     if (password_verify($user_data['password'], $user->getPassword())) {
-        $this->logger->addInfo("Password matched. " . PHP_EOL);
+        $this->logger->debug("Password matched. " . PHP_EOL);
         $response = \App\Backend\UserSessionHandler::login($response, $user);
         $response = $response->withRedirect("/");
     } else {
         $response = $response->withRedirect("/login?login=failed");
-        $this->logger->addInfo("Password did not match. " . PHP_EOL);
+        $this->logger->debug("Password did not match. " . PHP_EOL);
     }
 
     return $response;

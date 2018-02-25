@@ -12,7 +12,7 @@ if (PHP_SAPI == 'cli-server') {
 }
 
 require 'vendor/autoload.php';
-require 'src/public/settings.php';
+require 'src/settings.php';
 
 $app = new \Slim\App(['settings' => $config]);
 
@@ -24,9 +24,19 @@ $container['temp_directory'] = $config['temp_directory'];
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 
 $container['logger'] = function ($c) {
+    global $config;
+
     $logger = new \Monolog\Logger('Log');
-    $file_handler = new \Monolog\Handler\StreamHandler('logs/app.log');
-    $logger->pushHandler($file_handler);
+
+    $client = new Predis\Client([
+        'scheme' => 'tcp',
+        'host'   => $config['log_host'],
+        'port'   => $config['log_port'],
+        'password' => $config['log_pass']
+    ]);
+    $redis_handler = new \Monolog\Handler\RedisHandler($client, 'frontend_logs');
+
+    $logger->pushHandler($redis_handler);
     return $logger;
 };
 
