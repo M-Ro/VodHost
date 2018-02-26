@@ -13,7 +13,8 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
         $this->get('upload_directory'),
         $this->get('temp_directory'),
         $this->logger,
-        $this->em
+        $this->em,
+        $this->mq
     );
 
     return $uploadHandler->handleChunk($request, $response);

@@ -47,7 +47,7 @@ class BroadcastMapper extends Mapper
     {
         $fetch = $this->em->getRepository(BroadcastEntity::class)->findBy(['id' => $id]);
 
-        foreach($fetch as $object) {
+        foreach ($fetch as $object) {
             $object->visibility = $vis;
             $this->em->flush();
         }

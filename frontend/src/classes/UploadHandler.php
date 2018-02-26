@@ -1,12 +1,15 @@
 <?php
 namespace App\Frontend;
 
+use PhpAmqpLib\Message\AMQPMessage;
+
 class UploadHandler
 {
     protected $dir_upload;
     protected $dir_chunks;
     protected $logger;
     protected $em;
+    protected $mq;
 
     /**
      * Construct class from data array
@@ -14,13 +17,15 @@ class UploadHandler
      * @param $chunkdir - Temp directory for upload chunks
      * @param $logger - Reference to monologger.
      * @param $em - Reference to entity mapper
+     * @param $mq - Reference to message/job queue
      */
-    public function __construct($uploaddir, $chunkdir, $logger, $em)
+    public function __construct($uploaddir, $chunkdir, $logger, $em, $mq)
     {
         $this->dir_upload = $uploaddir;
         $this->dir_chunks = $chunkdir;
         $this->logger = $logger;
         $this->em = $em;
+        $this->mq = $mq;
     }
 
     /**
@@ -71,6 +76,12 @@ class UploadHandler
             ];
             $broadcast = $this->createBroadcast($request, $mediainfo);
 
+            // Create a work task to process this upload
+            $this->createTask($broadcast);
+
+            $this->logger->addInfo("UploadHandler: Stored: " . $file['name'] . " id: " . $broadcast->getId() . PHP_EOL);
+
+            /* Return success response to client */
             $message = [
                 "type" => "success",
                 "name" => $file['name'],
@@ -79,8 +90,6 @@ class UploadHandler
                 "size" => $file['size'],
                 "fullpath" => $dest
             ];
-
-            $this->logger->addInfo("UploadHandler: Storing for processing: " . $file['name'] . PHP_EOL);
         } else {
             // Do nothing for now, file has not finished uploading
         }
@@ -94,7 +103,7 @@ class UploadHandler
      * @param Request $request - HTTP Request. Contains cookie data to map upload to user
      * @param array $mediainfo - Contains file information we store in the broadcast
      *
-     * @return bool - True if a database entry was successful
+     * @return Entity\BroadcastEntity - The BroadcastEntity that was inserted
      */
     private function createBroadcast(\Slim\Http\Request $request, array $mediainfo)
     {
@@ -120,8 +129,29 @@ class UploadHandler
             $bmapper = new BroadcastMapper($this->em);
             if ($bmapper) {
                 $bmapper->save($broadcast);
-                return true;
+                return $broadcast;
             }
         }
+    }
+
+    /**
+     * Creates a task in the processing queue for this upload
+     *
+     * @param Entity\BroadcastEntity $broadcast - The broadcast entity created for this upload
+     */
+    private function createTask(Entity\BroadcastEntity $broadcast)
+    {
+        $task_data = [
+            'broadcastid' => $broadcast->getId(),
+            'storagenode' => 'unused',
+            'filename' => $broadcast->getFilename()
+        ];
+
+        $msg = new AMQPMessage(
+            json_encode($task_data),
+            array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT)
+        );
+
+        $this->mq->basic_publish($msg, '', 'vprocessing');
     }
 }

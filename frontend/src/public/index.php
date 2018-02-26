@@ -11,6 +11,8 @@ if (PHP_SAPI == 'cli-server') {
     error_reporting(E_ALL); // debug
 }
 
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+
 require 'vendor/autoload.php';
 require 'src/settings.php';
 
@@ -53,6 +55,18 @@ $container['em'] = function ($c) {
     );
     
     return \Doctrine\ORM\EntityManager::create($config['db_connection'], $doctrine_conf);
+};
+
+/* AMQP */
+$container['mq'] = function ($c) {
+    global $config;
+
+    $c = new AMQPStreamConnection($config['jobq_host'], $config['jobq_port'], $config['jobq_user'], $config['jobq_pass']);
+
+    $channel = $c->channel();
+    $channel->queue_declare('vprocessing', false, true, false, false);
+    
+    return $channel;
 };
 
 require 'src/routes/web.php';
