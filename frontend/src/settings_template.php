@@ -14,6 +14,9 @@ $config = [
     // Directory where videos will be delivered from
     'upload_directory' => __DIR__ . '/processing',
 
+    // Directory to store videos after processing
+    'processed_directory' => __DIR__ . '/final',
+
     // Job Queue -- RabbitMQ Configuration
     'jobq_server' => 'localhost',
     'jobq_port' => 5672,

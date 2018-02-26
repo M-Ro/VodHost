@@ -10,6 +10,13 @@
     ],
     "require": {
         "php-amqplib/php-amqplib": "^2.7",
-        "php-ffmpeg/php-ffmpeg": "^0.11.1"
+        "php-ffmpeg/php-ffmpeg": "^0.11.1",
+        "monolog/monolog": "^1.23",
+        "predis/predis": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "VodHost\\Backend\\": "src/classes/"
+        }
     }
 }
