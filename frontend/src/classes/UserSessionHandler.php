@@ -1,5 +1,5 @@
 <?php
-namespace App\Backend;
+namespace App\Frontend;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\FigRequestCookies;
@@ -31,7 +31,7 @@ class UserSessionHandler
         return $response;
     }
 
-    public static function login(\Slim\Http\Response $response, UserEntity $user)
+    public static function login(\Slim\Http\Response $response, Entity\UserEntity $user)
     {
         $response = FigResponseCookies::set(
             $response,

@@ -1,39 +1,17 @@
 <?php
-namespace App\Backend;
+namespace App\Frontend;
+
+use App\Frontend\Entity\BroadcastEntity as BroadcastEntity;
 
 class BroadcastMapper extends Mapper
 {
-    /* Initial migration */
-    public function createBroadcastsTable()
-    {
-        $sql = "CREATE TABLE IF NOT EXISTS broadcasts (
-	        id INTEGER PRIMARY KEY,
-            user_id INTEGER,
-	        title TEXT NOT NULL,
-            filename TEXT NOT NULL,
-	        length INTEGER NOT NULL,
-	        visibility INTEGER NOT NULL,
-            FOREIGN KEY(user_id) REFERENCES user(id));";
-
-        $this->db->exec($sql);
-    }
-
     /** Return all broadcasts in database
      *  @return array[BroadcastEntity] Array of Broadcasts
      */
     public function getBroadcasts()
     {
-        $sql = "SELECT id, user_id, title, filename, length, visibility
-            from broadcasts;";
-
-        $stmt = $this->db->query($sql);
-        
-        $results = [];
-        while ($row = $stmt->fetch()) {
-            $results[] = new BroadcastEntity($row);
-        }
-
-        return $results;
+        $records = $this->em->getRepository(BroadcastEntity::class)->findAll();
+        return $records;
     }
 
     /**
@@ -44,41 +22,49 @@ class BroadcastMapper extends Mapper
      */
     public function getBroadcastById($broadcast_id)
     {
-        $sql = "SELECT id, user_id, title, filename, length, visibility from broadcasts
-                    where id = :broadcast_id";
-
-        $stmt = $this->db->prepare($sql);
-        $result = $stmt->execute(["broadcast_id" => $broadcast_id]);
-
-        if ($result) {
-            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-            if ($row) {
-                return new BroadcastEntity($row);
-            }
-        }
+        $result = $this->em->getRepository(BroadcastEntity::class)->findOneBy(['id' => $broadcast_id]);
+        return $result;
     }
 
     /**
-     * Serialize a BroadcastEntity to Database
+     * Serialize a BroadcastEntity to database
      *
      * @param BroadcastEntity $broadcast The BroadcastEntity object
      */
     public function save(BroadcastEntity $broadcast)
     {
-        $sql = "insert into broadcasts (user_id, title, filename, length, visibility) values
-            (:user_id, :title, :filename, :length, :visibility)";
+        $this->em->persist($broadcast);
+        $this->em->flush();
+    }
 
-        $stmt = $this->db->prepare($sql);
-        $result = $stmt->execute([
-            "user_id" => $broadcast->getUserId(),
-            "title" => $broadcast->getTitle(),
-            "filename" => $broadcast->getFilename(),
-            "length" => $broadcast->getLength(),
-            "visibility" => $broadcast->getVisibility()
-        ]);
+    /**
+     * Update the visibility status of a broadcast
+     *
+     * @param $id - id of the broadcast
+     * @param $vis - new visibility state
+     */
+    public function changeVisibility($id, $vis)
+    {
+        $fetch = $this->em->getRepository(BroadcastEntity::class)->findBy(['id' => $id]);
 
-        if (!$result) {
-            throw new Exception("could not save record");
+        foreach($fetch as $object) {
+            $object->visibility = $vis;
+            $this->em->flush();
         }
+    }
+
+    /**
+     * Remove a BroadcastEntity from the database
+     *
+     * @param $id - id of the broadcast
+     */
+    public function delete($id)
+    {
+        $this->em->createQueryBuilder()
+            ->delete(BroadcastEntity::class, 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
     }
 }

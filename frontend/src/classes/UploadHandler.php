@@ -1,26 +1,26 @@
 <?php
-namespace App\Backend;
+namespace App\Frontend;
 
 class UploadHandler
 {
     protected $dir_upload;
     protected $dir_chunks;
     protected $logger;
-    protected $db;
+    protected $em;
 
     /**
      * Construct class from data array
      * @param $uploaddir - Target directory for uploads
      * @param $chunkdir - Temp directory for upload chunks
      * @param $logger - Reference to monologger.
-     * @param $logger - Reference to database.
+     * @param $em - Reference to entity mapper
      */
-    public function __construct($uploaddir, $chunkdir, $logger, $db)
+    public function __construct($uploaddir, $chunkdir, $logger, $em)
     {
         $this->dir_upload = $uploaddir;
         $this->dir_chunks = $chunkdir;
         $this->logger = $logger;
-        $this->db = $db;
+        $this->em = $em;
     }
 
     /**
@@ -101,7 +101,7 @@ class UploadHandler
         /* Get UserID of file uploader */
         $uid = UserSessionHandler::getId($request);
         if ($uid < 0) { // This should not be possible
-            $this->logger->addInfo("UploadHandler: " . "Warning: Invalid user uploaded file" . PHP_EOL);
+            $this->logger->notice("UploadHandler: " . "Warning: Invalid user uploaded file" . PHP_EOL);
             return;
         }
 
@@ -111,13 +111,13 @@ class UploadHandler
             'title' => $mediainfo['title'],
             'filename' => $mediainfo['filename'],
             'length' => 0,
-            'visibility' => 'public'
+            'visibility' => true
         ];
-        $broadcast = new BroadcastEntity($broadcast_data);
+        $broadcast = new Entity\BroadcastEntity($broadcast_data);
 
         /* Serialize entity to database via mapper */
         if ($broadcast) {
-            $bmapper = new BroadcastMapper($this->db);
+            $bmapper = new BroadcastMapper($this->em);
             if ($bmapper) {
                 $bmapper->save($broadcast);
                 return true;

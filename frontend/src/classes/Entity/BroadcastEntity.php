@@ -1,13 +1,53 @@
 <?php
-namespace App\Backend;
+namespace App\Frontend\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Class BroadcastEntity
+ * @package App\Entity
+ *
+ * @ORM\Table(name="broadcast")
+ * @ORM\Entity
+ */
 class BroadcastEntity implements \JsonSerializable
 {
+    /**
+     * @var integer
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
     protected $id;
+
+    /**
+     * @var integer
+     * @ORM\Column(name="user_id", type="integer")
+     */
     protected $user_id;
+
+    /**
+     * @var string
+     * @ORM\Column(name="title", type="string")
+     */
     protected $title;
+
+    /**
+     * @var string
+     * @ORM\Column(name="filename", type="string")
+     */
     protected $filename;
+
+    /**
+     * @var float
+     * @ORM\Column(name="length", type="float")
+     */
     protected $length;
+
+    /**
+     * @var boolean
+     * @ORM\Column(name="visibility", type="boolean")
+     */
     protected $visibility;
 
     /**

@@ -23,5 +23,14 @@ $config = [
 	// Log Server -- Redis Configuration
 	'log_server' => 'localhost',
 	'log_port' => 6379,
-	'log_pass' => 'password'
+	'log_pass' => 'password',
+
+	// Database connection
+	'db_connection' => [
+        'driver'   => 'pdo_mysql',
+        'host'     => 'localhost',
+        'dbname'   => 'vodhost',
+        'user'     => 'vodhost',
+        'password' => 'your-password',
+    ]
 ];

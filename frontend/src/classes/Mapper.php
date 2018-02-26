@@ -1,12 +1,12 @@
 <?php
-namespace App\Backend;
+namespace App\Frontend;
 
 abstract class Mapper
 {
-    protected $db;
+    protected $em;
 
-    public function __construct($db)
+    public function __construct($em)
     {
-        $this->db = $db;
+        $this->em = $em;
     }
 }

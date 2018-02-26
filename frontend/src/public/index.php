@@ -40,14 +40,19 @@ $container['logger'] = function ($c) {
     return $logger;
 };
 
-$container['db'] = function ($c) {
+/* Doctrine */
+$container['em'] = function ($c) {
     global $config;
-    $pdo = new PDO("sqlite:" . $config['SQLiteFilePath']);
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-    return $pdo;
+    $doctrine_conf = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
+        ['src/classes/Entity'],
+        true,
+        __DIR__ . '/cache/proxies',
+        null,
+        false
+    );
+    
+    return \Doctrine\ORM\EntityManager::create($config['db_connection'], $doctrine_conf);
 };
 
 require 'src/routes/web.php';

@@ -3,15 +3,15 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Backend\UserSessionHandler::getUsername($request);
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Frontend\UserSessionHandler::getUsername($request);
 
     $response = $this->view->render($response, 'index.phtml', ['loggedIn' => $loggedIn, 'username' => $username,]);
     return $response;
 });
 
 $app->get('/login', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
     if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
@@ -22,7 +22,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 });
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
     if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
@@ -33,8 +33,8 @@ $app->get('/register', function (Request $request, Response $response, array $ar
 });
 
 $app->get('/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Backend\UserSessionHandler::getUsername($request);
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Frontend\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         $response = $response->withRedirect("/");
         return $response;
@@ -46,15 +46,15 @@ $app->get('/upload', function (Request $request, Response $response, array $args
 
 $app->get('/view/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
-    $loggedIn = \App\Backend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Backend\UserSessionHandler::getUsername($request);
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Frontend\UserSessionHandler::getUsername($request);
 
     $response_vars = [
         'loggedIn' => $loggedIn,
         'username' => $username
     ];
 
-    $bmapper = new \App\Backend\BroadcastMapper($this->db);
+    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
     $bentity = $bmapper->getBroadcastById($id);
     if (!$bentity) {
         $this->logger->addInfo("/view/ invalid broadcast id: " . $id . PHP_EOL);
@@ -69,24 +69,9 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
     return $response;
 });
 
-// FIXME: Temporary hack to create db tables, this should obviouslyh not be accessible later.
-$app->get('/admin_createdb', function (Request $request, Response $response, array $args) {
-    
-    $this->logger->addInfo("Creating Users table" . PHP_EOL);
-    $user_mapper = new \App\Backend\UserMapper($this->db);
-    $user_mapper->createUsersTable();
-
-    $this->logger->addInfo("Creating broadcasts table" . PHP_EOL);
-    $broadcast_mapper = new \App\Backend\BroadcastMapper($this->db);
-    $broadcast_mapper->createBroadcastsTable();
-
-    $response->getBody()->write("Done");
-    return $response;
-});
-
 $app->get('/logout', function (Request $request, Response $response, array $args) {
 
-    $response = \App\Backend\UserSessionHandler::purge($response);
+    $response = \App\Frontend\UserSessionHandler::purge($response);
 
     $response = $response->withRedirect("/");
     return $response;
@@ -106,8 +91,8 @@ $app->post('/attempt_signup', function (Request $request, Response $response, ar
 
     $this->logger->addInfo("Creating user " . $user_data['username'] . " - " . $user_data['email'] . PHP_EOL);
 
-    $user = new \App\Backend\UserEntity($user_data);
-    $user_mapper = new \App\Backend\UserMapper($this->db);
+    $user = new \App\Frontend\Entity\UserEntity($user_data);
+    $user_mapper = new \App\Frontend\UserMapper($this->em);
     $user_mapper->save($user);
 
     $response->getBody()->write("Hello, " . $user_data['username']);
@@ -125,7 +110,7 @@ $app->post('/attempt_login', function (Request $request, Response $response, arr
     $this->logger->debug("User attempting to login: " . $user_data['email'] . PHP_EOL);
 
     /* Attempt to find user by email address then verify password matches */
-    $user_mapper = new \App\Backend\UserMapper($this->db);
+    $user_mapper = new \App\Frontend\UserMapper($this->em);
     $user = $user_mapper->getUserByEmail($user_data['email']);
 
     if (!$user) {
@@ -134,7 +119,7 @@ $app->post('/attempt_login', function (Request $request, Response $response, arr
 
     if (password_verify($user_data['password'], $user->getPassword())) {
         $this->logger->debug("Password matched. " . PHP_EOL);
-        $response = \App\Backend\UserSessionHandler::login($response, $user);
+        $response = \App\Frontend\UserSessionHandler::login($response, $user);
         $response = $response->withRedirect("/");
     } else {
         $response = $response->withRedirect("/login?login=failed");
