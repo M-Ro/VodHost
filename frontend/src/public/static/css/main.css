@@ -173,6 +173,11 @@ td, th {
     height:180px;
 }
 
+p.rederror
+{
+    color: #ff4444;
+}
+
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some

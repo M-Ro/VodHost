@@ -35,19 +35,19 @@ class UserSessionHandler
     {
         $response = FigResponseCookies::set(
             $response,
-            SetCookie::create('uid')->withValue($user->getId())->rememberForever()
+            SetCookie::create('uid')->withValue($user->getId())->withPath('/')->rememberForever()
         );
         $response = FigResponseCookies::set(
             $response,
-            SetCookie::create('username')->withValue($user->getUsername())->rememberForever()
+            SetCookie::create('username')->withValue($user->getUsername())->withPath('/')->rememberForever()
         );
         $response = FigResponseCookies::set(
             $response,
-            SetCookie::create('email')->withValue($user->getEmail())->rememberForever()
+            SetCookie::create('email')->withValue($user->getEmail())->withPath('/')->rememberForever()
         );
         $response = FigResponseCookies::set(
             $response,
-            SetCookie::create('logged_in')->withValue(true)->rememberForever()
+            SetCookie::create('logged_in')->withValue(true)->withPath('/')->rememberForever()
         );
 
         return $response;

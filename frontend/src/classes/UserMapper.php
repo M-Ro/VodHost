@@ -5,8 +5,10 @@ use App\Frontend\Entity\UserEntity as UserEntity;
 
 class UserMapper extends Mapper
 {
-    /** Return all users in database
-     *  @return array[UserEntity] Array of Users
+    /**
+     * Return all users in database
+     *
+     * @return array[UserEntity] Array of Users
      */
     public function getUsers()
     {
@@ -35,6 +37,18 @@ class UserMapper extends Mapper
     public function getUserByEmail($user_email)
     {
         $result = $this->em->getRepository(UserEntity::class)->findOneBy(['email' => $user_email]);
+        return $result;
+    }
+
+    /**
+     * Get user by Username
+     *
+     * @param str $user_name The username of the user
+     * @return UserEntity  The User
+     */
+    public function getUserByUsername($user_name)
+    {
+        $result = $this->em->getRepository(UserEntity::class)->findOneBy(['username' => $user_name]);
         return $result;
     }
 
