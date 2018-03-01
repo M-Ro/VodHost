@@ -22,6 +22,7 @@ $container = $app->getContainer();
 
 $container['upload_directory'] = $config['upload_directory'];
 $container['temp_directory'] = $config['temp_directory'];
+$container['api_key'] = $config['api_key'];
 
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 
@@ -79,5 +80,7 @@ require 'src/routes/web.php';
 require 'src/routes/account.php';
 
 require 'src/routes/api.php';
+
+require 'src/routes/backend.php';
 
 $app->run();

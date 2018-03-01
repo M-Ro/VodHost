@@ -35,5 +35,8 @@ $config = [
         'dbname'   => 'vodhost',
         'user'     => 'vodhost',
         'password' => 'your-password',
-    ]
+    ],
+
+    // Internal API Key - MUST BE CHANGED
+    'api_key' => 'key'
 ];
