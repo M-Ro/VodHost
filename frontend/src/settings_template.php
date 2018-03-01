@@ -5,6 +5,9 @@ $config = [
     'displayErrorDetails' => true,
     'addContentLengthHeader' => false,
 
+    // URL the website runs on
+    'server_domain' => 'mywebsite.com',
+
     // Path to the SQLite database file
     'SQLiteFilePath' => 'db/sqlite.db',
 

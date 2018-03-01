@@ -142,9 +142,7 @@ class UploadHandler
     private function createTask(Entity\BroadcastEntity $broadcast)
     {
         $task_data = [
-            'broadcastid' => $broadcast->getId(),
-            'storagenode' => 'unused',
-            'filename' => $broadcast->getFilename()
+            'broadcastid' => $broadcast->getId()
         ];
 
         $msg = new AMQPMessage(

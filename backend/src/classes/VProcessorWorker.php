@@ -25,7 +25,35 @@ class VProcessorWorker extends Worker
 
             $data = json_decode($msg->body, true);
 
-            $path = $this->config['upload_directory'] . DIRECTORY_SEPARATOR . $data['filename'];
+            $id = $data['broadcastid'];
+
+            /* Retrieve information from the frontend about the job */
+            $broadcast_details = $this->getBroadcastInfo($id);
+            if(!$broadcast_details) {
+                return;
+            }
+
+            $broadcast_details = json_decode($broadcast_details, true);
+
+            /* Fetch the file from the processing queue using curl */
+
+            $url = $this->config['server_domain'] . '/upload/processing/' . $broadcast_details['filename'];
+            $path = $broadcast_details['filename'];
+
+            $fp = fopen ($path, 'w+');
+            $curl_handle = curl_init(str_replace(" ","%20", $url));
+            curl_setopt($curl_handle, CURLOPT_FILE, $fp); 
+            curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
+            $ret = curl_exec($curl_handle);
+            curl_close($curl_handle);
+            fclose($fp);
+
+            if(!$ret)
+            {
+                $this->log->error("Could not fetch video for processing: " . $url . PHP_EOL);
+                return;
+            }
+
             $vprocessor = new VProcessor($path);
 
             $v_setup = [
@@ -60,5 +88,28 @@ class VProcessorWorker extends Worker
         while(count($this->channel->callbacks)) {
             $this->channel->wait();
         }
+    }
+
+    /**
+     * Calls /api/backend/retrieve/$id and returns the json result
+     *
+     * @param int $id - id of the broadcast
+     * @return json array contained in the response, or null on error
+     */
+    private function getBroadcastInfo(int $id)
+    {
+        $url = $this->config['server_domain'] . '/api/backend/retrieve/' . $id;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPHEADER => array('X-API-KEY: ' . $this->config['api_key'])
+        ));
+
+        $result = curl_exec($curl);
+        curl_close($curl);
+
+        return $result;        
     }
 }
