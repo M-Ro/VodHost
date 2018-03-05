@@ -41,5 +41,8 @@ $config = [
     ],
 
     // Internal API Key - MUST BE CHANGED
-    'api_key' => 'key'
+    'api_key' => 'key',
+
+    's3_key' => '',
+    's3_secret' => ''
 ];
