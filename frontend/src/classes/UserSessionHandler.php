@@ -26,6 +26,7 @@ class UserSessionHandler
         $response = FigResponseCookies::expire($response, 'uid');
         $response = FigResponseCookies::expire($response, 'username');
         $response = FigResponseCookies::expire($response, 'email');
+        $response = FigResponseCookies::expire($response, 'admin');
         $response = FigResponseCookies::expire($response, 'logged_in');
 
         return $response;
@@ -44,6 +45,10 @@ class UserSessionHandler
         $response = FigResponseCookies::set(
             $response,
             SetCookie::create('email')->withValue($user->getEmail())->withPath('/')->rememberForever()
+        );
+        $response = FigResponseCookies::set(
+            $response,
+            SetCookie::create('admin')->withValue($user->getAdmin())->withPath('/')->rememberForever()
         );
         $response = FigResponseCookies::set(
             $response,
@@ -78,4 +83,13 @@ class UserSessionHandler
             return $email->getValue();
         }
     }
+
+    public static function getAdmin(\Slim\Http\Request $request)
+    {
+        $admin = FigRequestCookies::get($request, 'admin');
+        if ($admin) {
+            return $admin->getValue();
+        }
+    }
+
 }

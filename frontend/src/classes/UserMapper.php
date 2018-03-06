@@ -61,6 +61,13 @@ class UserMapper extends Mapper
     {
         $this->em->persist($user);
         $this->em->flush();
+
+        /* We make the first user an admin */
+        if($user->getId() == 1) {
+            $user->setAdmin(true);
+            $user = $this->em->merge($user);
+            $this->em->flush();
+        }
     }
 
     /**

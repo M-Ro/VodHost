@@ -40,6 +40,25 @@ class UserEntity
     protected $password;
 
     /**
+     * @var boolean
+     * @ORM\Column(name="admin", type="boolean")
+     */
+    protected $admin;
+
+    /**
+     * @var boolean
+     * @ORM\Column(name="activated", type="boolean")
+     */
+    protected $activated;
+
+    /**
+     * @var string
+     * @ORM\Column(name="hash", type="string")
+     */
+    protected $hash;
+
+
+    /**
      * Construct class from data array
      * @param array $data The data to use to create
      */
@@ -53,6 +72,9 @@ class UserEntity
         $this->username = $data['username'];
         $this->email = $data['email'];
         $this->password = $data['password'];
+        $this->admin = false;
+        $this->activated = true;
+        $this->hash = bin2hex(random_bytes(16));
     }
 
     public function getArrayCopy()
@@ -78,5 +100,25 @@ class UserEntity
     public function getPassword()
     {
         return $this->password;
+    }
+
+    public function getActivated()
+    {
+        return $this->activated;
+    }
+
+    public function getAdmin()
+    {
+        return $this->admin;
+    }
+
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    public function setAdmin($val)
+    {
+        $this->admin = $val;
     }
 }
