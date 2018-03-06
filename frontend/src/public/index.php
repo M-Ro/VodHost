@@ -23,6 +23,7 @@ $container = $app->getContainer();
 $container['upload_directory'] = $config['upload_directory'];
 $container['temp_directory'] = $config['temp_directory'];
 $container['api_key'] = $config['api_key'];
+$container['content_url_root'] = $config['content_url_root'];
 
 $container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
 

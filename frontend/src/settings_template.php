@@ -20,6 +20,10 @@ $config = [
     // Directory to store videos after processing
     'processed_directory' => __DIR__ . '/final',
 
+    // URL where the final processed content is located, this can be a simple
+    // local path, web server, or cloud storage URL like cloudfront.
+    'content_url_root' => __DIR__ . '/content', 
+
     // Job Queue -- RabbitMQ Configuration
     'jobq_server' => 'localhost',
     'jobq_port' => 5672,

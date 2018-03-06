@@ -19,6 +19,7 @@
 		$http.get("api/fetch/recentvideos")
 	    .then(function(response) {
 	    	$scope.broadcasts = $scope.$eval(response.data);
+	    	$scope.contenturl = "<?php echo $content_url; ?>";
 	    });
 });
 </script>
@@ -35,7 +36,7 @@
 		<ul>
 			<li ng-repeat="video in broadcasts">
 				<div class="videocard">
-						<a href="/view/{{video.id}}"><img src="/thumbs/{{video.id}}_thumb.png"></img>
+						<a href="/view/{{video.id}}"><img src="{{contenturl}}/thumb/{{video.id}}/thumb_0.jpg"></img>
 						<h4>{{video.title}}</h4></a>
 				</div>
 			</li>

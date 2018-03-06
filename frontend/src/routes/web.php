@@ -6,7 +6,12 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
     $username = \App\Frontend\UserSessionHandler::getUsername($request);
 
-    $response = $this->view->render($response, 'index.phtml', ['loggedIn' => $loggedIn, 'username' => $username,]);
+    $response = $this->view->render(
+        $response,
+        'index.phtml',
+        ['loggedIn' => $loggedIn, 'username' => $username, 'content_url' => $this->get('content_url_root')]
+    );
+
     return $response;
 });
 
@@ -60,7 +65,7 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
         $this->logger->addInfo("/view/ invalid broadcast id: " . $id . PHP_EOL);
     } else {
         // fixme set uploaddir in config
-        $response_vars['media_path'] = '/uploads' . DIRECTORY_SEPARATOR . $bentity->getFilename();
+        $response_vars['media_path'] = $this->get('content_url_root') . "/video/$id.mp4";
         $response_vars['media_title'] = $bentity->getTitle();
     }
 
