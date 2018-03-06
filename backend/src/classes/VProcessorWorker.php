@@ -91,6 +91,9 @@ class VProcessorWorker extends Worker
             /* Upload the processed content */
             $this->uploadThumbsToS3($data['broadcastid'], $v_setup);
             $this->uploadVideoToS3($data['broadcastid'], $v_setup);
+
+            /* Cleanup local files we created */
+            $this->cleanupWorkspace($v_setup['target'], $path);
         };
 
         // Inform AMQP which job queue we consume from
@@ -123,6 +126,16 @@ class VProcessorWorker extends Worker
         curl_close($curl);
 
         return $result;        
+    }
+
+    private function cleanupWorkspace($outputdir, $inputfile)
+    {
+        /* Delete local unprocessed input file */
+        unlink($inputfile);
+
+        /* Delete output workspace containing the thumbs and mp4 */\
+        array_map('unlink', glob("$outputdir/*.*"));
+        rmdir($outputdir);
     }
 
     private function uploadThumbsToS3($id, $settings)
