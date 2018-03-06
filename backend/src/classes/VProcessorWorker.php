@@ -94,6 +94,9 @@ class VProcessorWorker extends Worker
 
             /* Cleanup local files we created */
             $this->cleanupWorkspace($v_setup['target'], $path);
+
+            /* Inform the frontend application the video is processed */
+            $this->tagProcessed($data['broadcastid']);
         };
 
         // Inform AMQP which job queue we consume from
@@ -125,9 +128,15 @@ class VProcessorWorker extends Worker
         $result = curl_exec($curl);
         curl_close($curl);
 
-        return $result;        
+        return $result;
     }
 
+    /**
+     * Deletes the input file we downloaded and the output files that were generated
+     *
+     * @param $outputdir - Output workspace directory to purge
+     * @param $inputfile - Input video file to purge
+     */
     private function cleanupWorkspace($outputdir, $inputfile)
     {
         /* Delete local unprocessed input file */
@@ -138,6 +147,35 @@ class VProcessorWorker extends Worker
         rmdir($outputdir);
     }
 
+    /**
+     * Calls /api/backend/tagProcessed/$id to inform the frontend that a broadcast
+     * has finalized processing.
+     *
+     * @param $id - Broadcast ID
+     */
+    private function tagProcessed($id)
+    {
+        $url = $this->config['server_domain'] . '/api/backend/tagprocessed/' . $id;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPHEADER => array('X-API-KEY: ' . $this->config['api_key'])
+        ));
+
+        $result = curl_exec($curl);
+        curl_close($curl);
+
+        return $result;
+    }
+
+    /**
+     * Uploads the generated thumbnail set to remote S3 storage.
+     *
+     * @param $id - Broadcast ID
+     * @param $settings - Video settings array, contains information e.g number of thumbnails
+     */
     private function uploadThumbsToS3($id, $settings)
     {
         $bucket = 'vodhost';
@@ -171,6 +209,12 @@ class VProcessorWorker extends Worker
         }
     }
 
+    /**
+     * Uploads the transmuxed/transcoded video to S3 storage using MultiPart Uploads
+     *
+     * @param $id - Broadcast ID
+     * @param $settings - Video settings array, contains information e.g file location
+     */
     private function uploadVideoToS3($id, $settings)
     {
         $bucket = 'vodhost';
