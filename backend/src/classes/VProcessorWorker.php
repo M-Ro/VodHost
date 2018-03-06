@@ -75,15 +75,18 @@ class VProcessorWorker extends Worker
             }
 
             /* Start processing */
+            /* Transmux if required */
+            $vprocessor->transmuxToMP4($v_setup);
+            $this->log->debug("Transmuxed content to MP4 for id " . $data['broadcastid'] . PHP_EOL);
+
+            $vprocessor = new VProcessor($v_setup['target'] . $v_setup['output_filename']);
+
+            /* We generate the thumbnails *after* transmuxing as ffmpeg can't seek some filetypes */
             $vprocessor->generateThumbnailSet($v_setup);
             $this->log->debug("Generated thumbnails for id " . $data['broadcastid'] . PHP_EOL);
 
             $vprocessor->scaleThumbnails($v_setup);
             $this->log->debug("Scaled thumbnails for id " . $data['broadcastid'] . PHP_EOL);
-
-            /* Transmux if required */
-            $vprocessor->transmuxToMP4($v_setup);
-            $this->log->debug("Transmuxed content to MP4 for id " . $data['broadcastid'] . PHP_EOL);
 
             /* Upload the processed content */
             $this->uploadThumbsToS3($data['broadcastid'], $v_setup);
