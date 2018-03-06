@@ -194,7 +194,7 @@ class VProcessorWorker extends Worker
                     'Key'        => $keyname,
                     'UploadId'   => $uploadId,
                     'PartNumber' => $partNumber,
-                    'Body'       => fread($file, 5 * 1024 * 1024),
+                    'Body'       => fread($file, 16 * 1024 * 1024),
                 ));
                 $parts[] = array(
                     'PartNumber' => $partNumber++,
