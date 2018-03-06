@@ -131,7 +131,7 @@ class VProcessor
 
         $format = new \FFMpeg\Format\Video\X264;
         // this is fucking stupid, well done PHP-FFmpeg
-        $format->setAdditionalParameters(array('-vcodec', 'copy', '-acodec', 'copy'));
+        $format->setAdditionalParameters(array('-vcodec', 'copy', '-acodec', 'copy', '-movflags', 'faststart'));
 
         $this->video->save($format, $settings['target'] . $settings['output_filename']);
     }
