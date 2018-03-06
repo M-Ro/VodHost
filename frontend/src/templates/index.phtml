@@ -15,13 +15,36 @@
 <script>
 	var app = angular.module("ng-frontPage", []);
 
-	app.controller("frontPageCtrl", function($scope, $http) {
+	app.controller("frontPageCtrl", function($scope, $http, $interval) {
 		$http.get("api/fetch/recentvideos")
 	    .then(function(response) {
 	    	$scope.broadcasts = $scope.$eval(response.data);
 	    	$scope.contenturl = "<?php echo $content_url; ?>";
 	    });
-});
+
+
+	    var anim_video;
+	    var anim_i;
+
+	    var animateThumbFunc;
+
+	    $scope.startAnimateThumb = function(video) {
+        	anim_video = video;
+        	anim_i=1;
+
+        	animateThumbFunc = $interval(function () {
+		        anim_video.thumb = ($scope.contenturl + '/thumb/' + video.id + '/thumb_' + anim_i + '.jpg')
+		        anim_i += 1;
+		        if(anim_i >= 5)
+		        	anim_i = 0;
+		    }, 500);
+        }
+
+        $scope.stopAnimateThumb = function(video) {
+        	video.thumb = ($scope.contenturl + '/thumb/' + video.id + '/thumb_0.jpg')
+        	$interval.cancel(animateThumbFunc);
+        }
+	});
 </script>
 
 <body>
@@ -35,8 +58,8 @@
 	<div class="videolist">
 		<ul>
 			<li ng-repeat="video in broadcasts">
-				<div class="videocard">
-						<a href="/view/{{video.id}}"><img src="{{contenturl}}/thumb/{{video.id}}/thumb_0.jpg"></img>
+				<div class="videocard" ng-mouseenter="startAnimateThumb(video)" ng-mouseleave="stopAnimateThumb(video)">
+						<a href="/view/{{video.id}}"><img ng-src="{{video.thumb || contenturl + '/thumb/' + video.id + '/thumb_0.jpg'}}"></img>
 						<h4>{{video.title}}</h4></a>
 				</div>
 			</li>
