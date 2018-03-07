@@ -38,6 +38,17 @@ class BroadcastMapper extends Mapper
     }
 
     /**
+     * Update a BroadcastEntity with new object properties
+     *
+     * @param BroadcastEntity $broadcast The BroadcastEntity object
+     */
+    public function update(BroadcastEntity $broadcast)
+    {
+        $this->em->merge($broadcast);
+        $this->em->flush();
+    }
+
+    /**
      * Update the visibility status of a broadcast
      *
      * @param $id - id of the broadcast

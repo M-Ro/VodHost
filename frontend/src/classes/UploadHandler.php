@@ -123,7 +123,7 @@ class UploadHandler
             'title' => $mediainfo['title'],
             'filename' => $mediainfo['filename'],
             'description' => 'Description text goes here',
-            'state' => 'Processing',
+            'state' => 'processing',
             'length' => 0,
             'visibility' => true
         ];

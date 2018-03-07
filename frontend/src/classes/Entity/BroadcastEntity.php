@@ -141,4 +141,9 @@ class BroadcastEntity implements \JsonSerializable
     {
         return $this->visibility;
     }
+
+    public function setState(string $state)
+    {
+        $this->state = $state;
+    }
 }

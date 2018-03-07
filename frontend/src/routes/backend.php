@@ -84,12 +84,16 @@ $app->get('/api/backend/tagprocessed/{id}', function (Request $request, Response
         return $response->withStatus(400);
     }
 
-    /* Get the md5sum for this unprocessed broadcast */
+    /* Get the filepath and delete unprocessed media */
     $path = $this->get('upload_directory') . DIRECTORY_SEPARATOR . $broadcast->getFilename();
 
     if(file_exists($path)) {
         unlink($path);
     }
+
+    /* Set the broadcast state to processed */
+    $broadcast->setState('processed');
+    $bmapper->update($broadcast);
 
     return $response->withStatus(200);
 });
