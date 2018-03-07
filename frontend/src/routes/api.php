@@ -24,10 +24,21 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
  *
  */
 // FIXME: This needs to return recentvideos, currently returns all videos
+// FIXME just convert this all to string array instead of modifying the entity object
 $app->get('/api/fetch/recentvideos', function (Request $request, Response $response, array $args) {
     $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $umapper = new \App\Frontend\UserMapper($this->em); 
 
     $broadcasts = $bmapper->getBroadcasts();
+    foreach($broadcasts as $b) {
+        $u = $umapper->getUserById($b->getUserId());
+        if($u) {
+            $b->uploader = $u->getUsername();
+        } else {
+            $b->uploader = '[Deleted]';
+        }
+    }
+
     $message = json_encode($broadcasts);
 
     return $response->withJson($message, 200);

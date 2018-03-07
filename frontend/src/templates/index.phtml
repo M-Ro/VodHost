@@ -19,6 +19,29 @@
 		$http.get("api/fetch/recentvideos")
 	    .then(function(response) {
 	    	$scope.broadcasts = $scope.$eval(response.data);
+	    	$scope.broadcasts.forEach(function(video) {
+	    		var videoDate = new Date(video.upload_date.date);
+	    		var curDate = new Date();
+	    		var dif = Math.floor((curDate.getTime() - videoDate.getTime()) / 1000);
+
+	    		video.upload_date = 'date unparsed';
+
+	    		if(dif < 60) {
+	    			video.upload_date = dif + ' seconds ago';
+	    		} else if (dif < 60*60) {
+	    			video.upload_date = Math.floor(dif/60) + ' minutes ago';
+	    		} else if (dif < 60*60*24) {
+	    			video.upload_date = Math.floor(dif/60/60) + ' hours ago';
+	    		} else if (dif < 60*60*24*30) {
+	    			video.upload_date = Math.floor(dif/60/60/24) + ' days ago';
+	    		} else if (dif < 60*60*24*30*12) {
+	    			video.upload_date = Math.floor(dif/60/60/24/30) + ' months ago';
+	    		} else {
+	    			video.upload_date = Math.floor(dif/60/60/24/30/12) + ' years ago';
+	    		}
+
+	    	});
+
 	    	$scope.contenturl = "<?php echo $content_url; ?>";
 	    });
 
@@ -61,6 +84,8 @@
 				<div class="videocard" ng-mouseenter="startAnimateThumb(video)" ng-mouseleave="stopAnimateThumb(video)">
 						<a href="/view/{{video.id}}"><img ng-src="{{video.thumb || contenturl + '/thumb/' + video.id + '/thumb_0.jpg'}}"></img>
 						<h4>{{video.title}}</h4></a>
+						<h7>Uploaded by: <strong>{{video.uploader}}</strong></h7><br />
+						<h7>{{video.views}} views &#8226; {{video.upload_date}}</h7>
 				</div>
 			</li>
 		</ul>

@@ -74,6 +74,12 @@ class BroadcastEntity implements \JsonSerializable
     protected $upload_date;
 
     /**
+     * @var string
+     * Set by the API when sending broadcasts to client. Not a db field
+     */
+    public $uploader;
+
+    /**
      * Construct class from data array
      * @param array $data The data to use to create
      */
@@ -152,6 +158,11 @@ class BroadcastEntity implements \JsonSerializable
     public function getVisibility()
     {
         return $this->visibility;
+    }
+
+    public function getUploadDate()
+    {
+        return $this->upload_date;
     }
 
     public function setState(string $state)
