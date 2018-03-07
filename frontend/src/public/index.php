@@ -25,7 +25,7 @@ $container['temp_directory'] = $config['temp_directory'];
 $container['api_key'] = $config['api_key'];
 $container['content_url_root'] = $config['content_url_root'];
 
-$container['view'] = new \Slim\Views\PhpRenderer('templates/');
+$container['view'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../templates/');
 
 $container['logger'] = function ($c) {
     global $config;
