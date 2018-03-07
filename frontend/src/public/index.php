@@ -13,8 +13,8 @@ if (PHP_SAPI == 'cli-server') {
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-require 'vendor/autoload.php';
-require 'src/settings.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../settings.php';
 
 $app = new \Slim\App(['settings' => $config]);
 
@@ -25,7 +25,7 @@ $container['temp_directory'] = $config['temp_directory'];
 $container['api_key'] = $config['api_key'];
 $container['content_url_root'] = $config['content_url_root'];
 
-$container['view'] = new \Slim\Views\PhpRenderer('src/templates/');
+$container['view'] = new \Slim\Views\PhpRenderer('templates/');
 
 $container['logger'] = function ($c) {
     global $config;
@@ -76,12 +76,12 @@ $container['mq'] = function ($c) {
     return $channel;
 };
 
-require 'src/routes/web.php';
+require __DIR__ . '/../routes/web.php';
 
-require 'src/routes/account.php';
+require __DIR__ . '/../routes/account.php';
 
-require 'src/routes/api.php';
+require __DIR__ . '/../routes/api.php';
 
-require 'src/routes/backend.php';
+require __DIR__ . '/../routes/backend.php';
 
 $app->run();
