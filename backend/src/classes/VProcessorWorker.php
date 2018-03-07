@@ -33,7 +33,7 @@ class VProcessorWorker extends Worker
             $id = $data['broadcastid'];
 
             /* Retrieve information from the frontend about the job */
-            $broadcast_details = $this->getBroadcastInfo($id);
+            $broadcast_details = $this->api->getBroadcastInfo($id);
             if(!$broadcast_details) {
                 return;
             }
@@ -96,7 +96,7 @@ class VProcessorWorker extends Worker
             $this->cleanupWorkspace($v_setup['target'], $path);
 
             /* Inform the frontend application the video is processed */
-            $this->tagProcessed($data['broadcastid']);
+            $this->api->tagBroadcastAsProcessed($data['broadcastid']);
         };
 
         // Inform AMQP which job queue we consume from
@@ -106,29 +106,6 @@ class VProcessorWorker extends Worker
         while(count($this->channel->callbacks)) {
             $this->channel->wait();
         }
-    }
-
-    /**
-     * Calls /api/backend/retrieve/$id and returns the json result
-     *
-     * @param int $id - id of the broadcast
-     * @return json array contained in the response, or null on error
-     */
-    private function getBroadcastInfo(int $id)
-    {
-        $url = $this->config['server_domain'] . '/api/backend/retrieve/' . $id;
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => array('X-API-KEY: ' . $this->config['api_key'])
-        ));
-
-        $result = curl_exec($curl);
-        curl_close($curl);
-
-        return $result;
     }
 
     /**
@@ -147,30 +124,7 @@ class VProcessorWorker extends Worker
         rmdir($outputdir);
     }
 
-    /**
-     * Calls /api/backend/tagProcessed/$id to inform the frontend that a broadcast
-     * has finalized processing.
-     *
-     * @param $id - Broadcast ID
-     */
-    private function tagProcessed($id)
-    {
-        $url = $this->config['server_domain'] . '/api/backend/tagprocessed/' . $id;
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => array('X-API-KEY: ' . $this->config['api_key'])
-        ));
-
-        $result = curl_exec($curl);
-        curl_close($curl);
-
-        return $result;
-    }
-
-    /**
+   /**
      * Uploads the generated thumbnail set to remote S3 storage.
      *
      * @param $id - Broadcast ID

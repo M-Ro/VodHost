@@ -14,6 +14,8 @@ abstract class Worker
 
     protected $config;
 
+    protected $api;
+
     /**
      * Initializes the worker object
      * @param array $config - Various configuration variables used
@@ -21,6 +23,7 @@ abstract class Worker
     public function __construct(array $config)
     {
         $this->config = $config;
+        $this->api = new APIMapper($config);
 
         $this->connectLogger();
         $this->connectTaskQueue();
