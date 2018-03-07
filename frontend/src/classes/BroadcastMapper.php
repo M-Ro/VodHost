@@ -65,6 +65,21 @@ class BroadcastMapper extends Mapper
     }
 
     /**
+     * Increment the number of views on a broadcast
+     *
+     * @param $id - id of the broadcast
+     */
+    public function incrementBroadcastViews($id)
+    {
+        $query = $this->em->createQuery('
+            UPDATE App\Frontend\Entity\BroadcastEntity t
+            SET t.views = t.views + 1 WHERE t.id = ?1'
+        );
+        $query->setParameter(1, $id);
+        $query->execute();
+    }
+
+    /**
      * Remove a BroadcastEntity from the database
      *
      * @param $id - id of the broadcast

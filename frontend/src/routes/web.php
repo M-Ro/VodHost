@@ -67,6 +67,8 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
         // fixme set uploaddir in config
         $response_vars['media_path'] = $this->get('content_url_root') . "/video/$id.mp4";
         $response_vars['media_title'] = $bentity->getTitle();
+
+        $bmapper->incrementBroadcastViews($id);
     }
 
     $response = $this->view->render($response, 'view.phtml', $response_vars);

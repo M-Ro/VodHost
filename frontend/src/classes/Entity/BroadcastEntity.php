@@ -68,6 +68,12 @@ class BroadcastEntity implements \JsonSerializable
     protected $visibility;
 
     /**
+     * @var datetime
+     * @ORM\Column(name="upload_date", type="datetime")
+     */
+    protected $upload_date;
+
+    /**
      * Construct class from data array
      * @param array $data The data to use to create
      */
@@ -85,10 +91,16 @@ class BroadcastEntity implements \JsonSerializable
         $this->visibility = $data['visibility'];
         $this->description = $data['description'];
         $this->state = $data['state'];
+
         if(isset($data['views'])) {
             $this->views = $data['views'];
         } else {
             $this->views = 0;
+        }
+        if(isset($data['upload_date'])) {
+            $this->upload_date = $data['upload_date'];
+        } else {
+            $this->upload_date = new \DateTime("now");
         }
     }
 
