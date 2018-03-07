@@ -12,6 +12,8 @@ body {
     line-height: 1.7em;
     color: #7f8c8d;
     background-color: #f4f4f4;
+    background-image: url("/static/img/noise.png");
+    background-repeat: repeat;
     font-size: 13px;
 }
 
