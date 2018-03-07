@@ -22,3 +22,7 @@ var app = angular.module('app', ['flow'])
   // Can be used with different implementations of Flow.js
   // flowFactoryProvider.factory = fustyFlowFactory;
 }]);
+
+app.controller("uploadCtrl", function($scope) {
+
+  });

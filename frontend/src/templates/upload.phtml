@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html id="ng-app" ng-app="app" flow-init>
+<html id="ng-app" ng-app="app" ng-controller="uploadCtrl" flow-init>
 <head>
 	<title>Video-on-Demand Host</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,12 +12,6 @@
 	<script src="/static/jsvendor/angular.min.js"></script>
     <script src="/static/jsvendor/ng-flow-standalone.js"></script>
     <script src="/static/js/uploader.js"></script>
-
-    <style>
-            .my-drop-zone { border: dotted 3px lightgray; padding: 19px; background-color: #eeeeee; text-align: center;}
-            .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
-            .another-file-over-class { border: dotted 3px green; }
-    </style>
 </head>
 
 <body flow-prevent-drop ng-style="style">
@@ -27,7 +21,25 @@
 <br /><br />
 
 <div class="pure-g">
-	<div class="pure-u-1-3"><h3></h3></div>
+	<div class="pure-u-1-3">
+		<table class="table table-hover table-bordered table-striped" flow-transfers>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Size</th>
+					<th>Progress</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="file in transfers">
+					<td>{{file.name}}</td>
+					<td>{{(file.size / 1024 / 1024) | number:1}} MB</td>
+					<td>{{file.progress()}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
 
 	<div class="pure-u-1-3">
 		<div class="centerdiv">
@@ -35,7 +47,6 @@
 
 			<div class="row">
 				<div class="span6">
-					<h2>Buttons:</h2>
 
 					<span class="btn" flow-btn><i class="icon icon-file"></i>Upload File</span>
 				</div>
@@ -43,69 +54,28 @@
 
 			<hr class="soften">
 
-			<h2>Transfers:</h2>
+			<h2>Transfer:</h2>
 
 			<p>
 				<a class="btn btn-small btn-success" ng-click="$flow.resume()">Upload</a>
 				<a class="btn btn-small btn-danger" ng-click="$flow.pause()">Pause</a>
-				<a class="btn btn-small btn-info" ng-click="$flow.cancel()">Cancel</a>
-				<span class="label label-info">Size: {{$flow.getSize()}}</span>
-				<span class="label label-info">Is Uploading: {{$flow.isUploading()}}</span>
 			</p>
 			
 		</div>
+	</div>
 
+	<div class="pure-u-1-3"><h3>Video Information</h3>
+		<form class="pure-form pure-form-stacked">
+			<fieldset class="pure-group">
+				<label for="title">Video Title</label>
+				<input ng-model="title" id="title" name="title" type="text" placeholder="My Video" required><br />
+				<textarea class="pure-input-1-2" ng-model="desc" id="desc" name="desc" placeholder="Description"></textarea>
+			</fieldset>
 
+			<a class="btn" ng-click="saveInfo()">Save</a>
+		</form>
 	</div>
 </div>
-
-<table class="table table-hover table-bordered table-striped" flow-transfers>
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>Name</th>
-				<th>Size</th>
-				<th>Relative Path</th>
-				<th>Unique Identifier</th>
-				<th>#Chunks</th>
-				<th>Progress</th>
-				<th>Paused</th>
-				<th>Uploading</th>
-				<th>Completed</th>
-				<th>Settings</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="file in transfers">
-				<td>{{$index+1}}</td>
-				<td>{{file.name}}</td>
-				<td>{{file.size}}</td>
-				<td>{{file.relativePath}}</td>
-				<td>{{file.uniqueIdentifier}}</td>
-				<td>{{file.chunks.length}}</td>
-				<td>{{file.progress()}}</td>
-				<td>{{file.paused}}</td>
-				<td>{{file.isUploading()}}</td>
-				<td>{{file.isComplete()}}</td>
-				<td>
-				<div class="btn-group">
-				  <a class="btn btn-mini btn-warning" ng-click="file.pause()" ng-hide="file.paused">
-				    Pause
-				  </a>
-				  <a class="btn btn-mini btn-warning" ng-click="file.resume()" ng-show="file.paused">
-				    Resume
-				  </a>
-				  <a class="btn btn-mini btn-danger" ng-click="file.cancel()">
-				    Cancel
-				  </a>
-				  <a class="btn btn-mini btn-info" ng-click="file.retry()" ng-show="file.error">
-				    Retry
-				  </a>
-				</div>
-				</td>
-			</tr>
-		</tbody>
-	</table>
 
 	<hr class="soften"/>
 
