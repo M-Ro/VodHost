@@ -13,10 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 class BroadcastEntity implements \JsonSerializable
 {
     /**
-     * @var integer
-     * @ORM\Column(name="id", type="integer")
+     * @var string
+     * @ORM\Column(name="id", type="string")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
@@ -34,6 +33,18 @@ class BroadcastEntity implements \JsonSerializable
 
     /**
      * @var string
+     * @ORM\Column(name="description", type="string")
+     */
+    protected $description;
+
+    /**
+     * @var state
+     * @ORM\Column(name="state", type="string")
+     */
+    protected $state;
+
+    /**
+     * @var string
      * @ORM\Column(name="filename", type="string")
      */
     protected $filename;
@@ -43,6 +54,12 @@ class BroadcastEntity implements \JsonSerializable
      * @ORM\Column(name="length", type="float")
      */
     protected $length;
+
+    /**
+     * @var int
+     * @ORM\Column(name="views", type="integer")
+     */
+    protected $views;
 
     /**
      * @var boolean
@@ -66,6 +83,13 @@ class BroadcastEntity implements \JsonSerializable
         $this->filename = $data['filename'];
         $this->length = $data['length'];
         $this->visibility = $data['visibility'];
+        $this->description = $data['description'];
+        $this->state = $data['state'];
+        if(isset($data['views'])) {
+            $this->views = $data['views'];
+        } else {
+            $this->views = 0;
+        }
     }
 
     public function jsonSerialize()
@@ -86,6 +110,21 @@ class BroadcastEntity implements \JsonSerializable
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function getViews()
+    {
+        return $this->views;
     }
 
     public function getFilename()

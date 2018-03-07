@@ -114,11 +114,16 @@ class UploadHandler
             return;
         }
 
+        $bmapper = new BroadcastMapper($this->em);
+
         /* Create a broadcast entity */
         $broadcast_data = [
+            'id' => $bmapper->generateUniqueID(),
             'user_id' => $uid,
             'title' => $mediainfo['title'],
             'filename' => $mediainfo['filename'],
+            'description' => 'Description text goes here',
+            'state' => 'Processing',
             'length' => 0,
             'visibility' => true
         ];
@@ -126,7 +131,6 @@ class UploadHandler
 
         /* Serialize entity to database via mapper */
         if ($broadcast) {
-            $bmapper = new BroadcastMapper($this->em);
             if ($bmapper) {
                 $bmapper->save($broadcast);
                 return $broadcast;

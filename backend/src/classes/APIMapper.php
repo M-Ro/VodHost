@@ -19,9 +19,9 @@ class APIMapper
      * Calls /api/backend/tagProcessed/$id to inform the frontend that a broadcast
      * has finalized processing.
      *
-     * @param int $id - Broadcast ID
+     * @param string $id - Broadcast ID
      */
-    public function tagBroadcastAsProcessed(int $id)
+    public function tagBroadcastAsProcessed(string $id)
     {
         $api_endpoint = '/api/backend/tagprocessed/';
         $url = $this->base_url . $api_endpoint . $id;
@@ -42,10 +42,10 @@ class APIMapper
     /**
      * Calls /api/backend/retrieve/$id and returns the json result
      *
-     * @param int $id - Broadcast ID
+     * @param string $id - Broadcast ID
      * @return json array contained in the response, or null on error
      */
-    public function getBroadcastInfo(int $id)
+    public function getBroadcastInfo(string $id)
     {
         $api_endpoint = '/api/backend/retrieve/';
         $url = $this->base_url . $api_endpoint . $id;
