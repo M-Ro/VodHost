@@ -2,11 +2,6 @@
 
 namespace VodHost\Backend;
 
-use Aws\S3\S3Client;
-use Aws\S3\Exception\S3Exception;
-use Aws\Common\Exception\MultipartUploadException;
-use Aws\S3\Model\MultipartUpload\UploadBuilder;
-
 require_once 'vprocessor.php';
 
 /**
@@ -14,6 +9,21 @@ require_once 'vprocessor.php';
  */
 class VProcessorWorker extends Worker
 {
+    private $storage;
+
+    public function __construct(array $config)
+    {
+        parent::__construct($config);
+
+        $s3_setup = [
+            'bucket' => 'vodhost',
+            'region' => 'eu-central-1',
+            'key' => $this->config['s3_key'],
+            'secret' => $this->config['s3_secret']
+        ];
+
+        $this->storage = new S3StorageEngine($s3_setup, $this->log);
+    }
 
     /**
      * Processes tasks from the video processing queue.
@@ -89,8 +99,7 @@ class VProcessorWorker extends Worker
             $this->log->debug("Scaled thumbnails for id " . $data['broadcastid'] . PHP_EOL);
 
             /* Upload the processed content */
-            $this->uploadThumbsToS3($data['broadcastid'], $v_setup);
-            $this->uploadVideoToS3($data['broadcastid'], $v_setup);
+            $this->pushToStorage($v_setup, $data['broadcastid']);
 
             /* Cleanup local files we created */
             $this->cleanupWorkspace($v_setup['target'], $path);
@@ -108,6 +117,22 @@ class VProcessorWorker extends Worker
         }
     }
 
+    private function pushToStorage($settings, $id)
+    {
+        /* First, upload the thumbnails we generated */
+        for($i=0; $i<$settings['thumbcount']; $i++) {
+            $keyname = "thumb/" . $id . '/' . "thumb_$i.jpg";
+            $path = $settings['target'] . "thumb_$i.jpg";
+            $this->storage->put($path, $keyname);
+        }
+
+        /* Push the transmuxed/transcoded MP4 */
+        $localpath = $settings['target'] . "$id.mp4";
+        $remotepath = "video/$id.mp4";
+
+        $this->storage->put($localpath, $remotepath);
+    }
+
     /**
      * Deletes the input file we downloaded and the output files that were generated
      *
@@ -122,122 +147,5 @@ class VProcessorWorker extends Worker
         /* Delete output workspace containing the thumbs and mp4 */\
         array_map('unlink', glob("$outputdir/*.*"));
         rmdir($outputdir);
-    }
-
-   /**
-     * Uploads the generated thumbnail set to remote S3 storage.
-     *
-     * @param $id - Broadcast ID
-     * @param $settings - Video settings array, contains information e.g number of thumbnails
-     */
-    private function uploadThumbsToS3($id, $settings)
-    {
-        $bucket = 'vodhost';
-
-        $s3 = new S3Client([
-            'version'     => 'latest',
-            'region'      => 'eu-central-1',
-            'credentials' => [
-                'key'    => $this->config['s3_key'],
-                'secret' => $this->config['s3_secret'],
-            ],
-        ]);
-
-        for($i=0; $i<$settings['thumbcount']; $i++) {
-            $keyname = "thumb/" . $id . '/' . "thumb_$i.jpg";
-            $path = $settings['target'] . "thumb_$i.jpg";
-
-            try {
-                $result = $s3->putObject(array(
-                    'Bucket' => $bucket,
-                    'Key'    => $keyname,
-                    'SourceFile'   => $path,
-                    'ACL'    => 'public-read'
-                ));
-
-                // Print the URL to the object.
-                $this->log->info($result['ObjectURL'] . PHP_EOL);
-            } catch (S3Exception $e) {
-                $this->log->error($e->getMessage() . PHP_EOL);
-            }
-        }
-    }
-
-    /**
-     * Uploads the transmuxed/transcoded video to S3 storage using MultiPart Uploads
-     *
-     * @param $id - Broadcast ID
-     * @param $settings - Video settings array, contains information e.g file location
-     */
-    private function uploadVideoToS3($id, $settings)
-    {
-        $bucket = 'vodhost';
-
-        $s3 = new S3Client([
-            'version'     => 'latest',
-            'region'      => 'eu-central-1',
-            'credentials' => [
-                'key'    => $this->config['s3_key'],
-                'secret' => $this->config['s3_secret'],
-            ],
-        ]);
-
-        $keyname = "video/$id.mp4";
-        $path = $settings['target'] . "$id.mp4";
-
-        // Create a new multipart upload and get the upload ID.
-        $result = $s3->createMultipartUpload(array(
-            'Bucket'       => $bucket,
-            'Key'          => $keyname,
-            'StorageClass' => 'REDUCED_REDUNDANCY',
-            'ACL'          => 'public-read',
-        ));
-        $uploadId = $result['UploadId'];
-
-        // Upload the file in parts.
-        try {
-            $file = fopen($path, 'r');
-            $parts = array();
-            $partNumber = 1;
-            while (!feof($file)) {
-                $result = $s3->uploadPart(array(
-                    'Bucket'     => $bucket,
-                    'Key'        => $keyname,
-                    'UploadId'   => $uploadId,
-                    'PartNumber' => $partNumber,
-                    'Body'       => fread($file, 16 * 1024 * 1024),
-                ));
-                $parts[] = array(
-                    'PartNumber' => $partNumber++,
-                    'ETag'       => $result['ETag'],
-                );
-
-                echo "Uploading part {$partNumber} of {$path}.\n";
-            }
-
-            fclose($file);
-        } catch (S3Exception $e) {
-            $result = $s3->abortMultipartUpload(array(
-                'Bucket'   => $bucket,
-                'Key'      => $keyname,
-                'UploadId' => $uploadId
-            ));
-
-            $this->log->error("Upload of {$path} failed" . PHP_EOL);
-        }
-
-        // 4. Complete multipart upload.
-        $result = $s3->completeMultipartUpload(array(
-            'Bucket'   => $bucket,
-            'Key'      => $keyname,
-            'UploadId' => $uploadId,
-            'MultipartUpload' => Array(
-                'Parts' => $parts,
-            ),
-        ));
-
-        $url = $result['Location'];
-
-        $this->log->info("Uploaded {$path} to {$url}." . PHP_EOL);
     }
 }
