@@ -27,12 +27,12 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
 // FIXME just convert this all to string array instead of modifying the entity object
 $app->get('/api/fetch/recentvideos', function (Request $request, Response $response, array $args) {
     $bmapper = new \App\Frontend\BroadcastMapper($this->em);
-    $umapper = new \App\Frontend\UserMapper($this->em); 
+    $umapper = new \App\Frontend\UserMapper($this->em);
 
     $broadcasts = $bmapper->getBroadcasts();
-    foreach($broadcasts as $b) {
+    foreach ($broadcasts as $b) {
         $u = $umapper->getUserById($b->getUserId());
-        if($u) {
+        if ($u) {
             $b->uploader = $u->getUsername();
         } else {
             $b->uploader = '[Deleted]';
@@ -40,6 +40,41 @@ $app->get('/api/fetch/recentvideos', function (Request $request, Response $respo
     }
 
     $message = json_encode($broadcasts);
+
+    return $response->withJson($message, 200);
+});
+
+$app->get('/api/account/getinfo', function (Request $request, Response $response, array $args) {
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    if (!$loggedIn) {
+        return $response->withStatus(403);
+    }
+
+    $umapper = new \App\Frontend\UserMapper($this->em);
+    $user = $umapper->getUserByUsername($username);
+
+    if (!$user) {
+        return $response->withStatus(403);
+    }
+
+    // User account information
+    $user_data = [
+        'username' => $user->getUsername(),
+        'email' => $user->getEmail(),
+        'activated' => $user->getActivated()
+    ];
+
+    // User uploaded video information
+    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $broadcasts = $bmapper->getBroadcastsByUserId($user->getId());
+
+    $arr = [
+        'user' => $user_data,
+        'broadcasts' => $broadcasts
+    ];
+
+    $message = json_encode($arr);
 
     return $response->withJson($message, 200);
 });

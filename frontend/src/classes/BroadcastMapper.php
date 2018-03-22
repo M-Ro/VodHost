@@ -26,6 +26,12 @@ class BroadcastMapper extends Mapper
         return $result;
     }
 
+    public function getBroadcastsByUserId($user_id)
+    {
+        $result = $this->em->getRepository(BroadcastEntity::class)->findBy(['user_id' => $user_id]);
+        return $result;
+    }
+
     /**
      * Serialize a BroadcastEntity to database
      *
