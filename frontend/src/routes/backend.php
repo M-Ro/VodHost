@@ -14,12 +14,12 @@ use \App\Frontend\BackendAuthentication as BackendAuthentication;
 $app->get('/api/backend/retrieve/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
 
-    if(!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
+    if (!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
         $this->logger->warning('backend/retrieve/ accessed with invalid api key' . PHP_EOL);
         return $response->withStatus(403);
     }
     
-    if(!$id) {
+    if (!$id) {
         $this->logger->warning('backend/retrieve/ called without valid id' . PHP_EOL);
         return $response->withStatus(400);
     }
@@ -27,7 +27,7 @@ $app->get('/api/backend/retrieve/{id}', function (Request $request, Response $re
     $bmapper = new \App\Frontend\BroadcastMapper($this->em);
     $broadcast = $bmapper->getBroadcastById($id);
 
-    if(!$broadcast) {
+    if (!$broadcast) {
         $this->logger->warning('backend/retrieve/ could not fetch broadcast at id ' . $id . PHP_EOL);
         return $response->withStatus(400);
     }
@@ -35,11 +35,11 @@ $app->get('/api/backend/retrieve/{id}', function (Request $request, Response $re
     /* Get the md5sum for this unprocessed broadcast */
     $path = $this->get('upload_directory') . DIRECTORY_SEPARATOR . $broadcast->getFilename();
 
-    if(file_exists($path)) {
+    if (file_exists($path)) {
         $md5sum = md5_file($path);
     }
 
-    if(!$md5sum) {
+    if (!$md5sum) {
         $this->logger->warning('backend/retrieve/ Could not get md5sum of requested file ' . $path . PHP_EOL);
         return $response->withStatus(500);
     }
@@ -65,12 +65,12 @@ $app->get('/api/backend/retrieve/{id}', function (Request $request, Response $re
 $app->get('/api/backend/tagprocessed/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
 
-    if(!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
+    if (!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
         $this->logger->warning('backend/tagprocessed/ accessed with invalid api key' . PHP_EOL);
         return $response->withStatus(403);
     }
 
-    if(!$id) {
+    if (!$id) {
         $this->logger->warning('backend/tagprocessed/ called without valid id' . PHP_EOL);
         return $response->withStatus(400);
     }
@@ -79,7 +79,7 @@ $app->get('/api/backend/tagprocessed/{id}', function (Request $request, Response
     $bmapper = new \App\Frontend\BroadcastMapper($this->em);
     $broadcast = $bmapper->getBroadcastById($id);
 
-    if(!$broadcast) {
+    if (!$broadcast) {
         $this->logger->warning('backend/tagprocessed/ could not fetch broadcast at id ' . $id . PHP_EOL);
         return $response->withStatus(400);
     }
@@ -87,7 +87,7 @@ $app->get('/api/backend/tagprocessed/{id}', function (Request $request, Response
     /* Get the filepath and delete unprocessed media */
     $path = $this->get('upload_directory') . DIRECTORY_SEPARATOR . $broadcast->getFilename();
 
-    if(file_exists($path)) {
+    if (file_exists($path)) {
         unlink($path);
     }
 

@@ -38,13 +38,13 @@ class S3StorageEngine extends StorageEngine
      */
     public function put($local_path, $remote_path)
     {
-        if(!file_exists($local_path)) {
+        if (!file_exists($local_path)) {
             throw new \Exception("File not found");
         }
 
         $filesize = filesize($local_path);
 
-        if($filesize < 5 * 1024 * 1024) { // Upload as single object
+        if ($filesize < 5 * 1024 * 1024) { // Upload as single object
             try {
                 $result = $this->s3->putObject(array(
                     'Bucket' => $this->s3_bucket,
@@ -105,7 +105,7 @@ class S3StorageEngine extends StorageEngine
                 'Bucket'   => $this->s3_bucket,
                 'Key'      => $remote_path,
                 'UploadId' => $uploadId,
-                'MultipartUpload' => Array(
+                'MultipartUpload' => array(
                     'Parts' => $parts,
                 ),
             ));

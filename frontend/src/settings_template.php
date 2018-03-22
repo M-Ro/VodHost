@@ -22,7 +22,7 @@ $config = [
 
     // URL where the final processed content is located, this can be a simple
     // local path, web server, or cloud storage URL like cloudfront.
-    'content_url_root' => __DIR__ . '/content', 
+    'content_url_root' => __DIR__ . '/content',
 
     // Job Queue -- RabbitMQ Configuration
     'jobq_server' => 'localhost',

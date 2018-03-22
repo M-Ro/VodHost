@@ -38,7 +38,7 @@ abstract class Worker
         $this->connection->close();
     }
 
-    public abstract function run();
+    abstract public function run();
 
     /** Connects to the remote redis db for logging.
      *

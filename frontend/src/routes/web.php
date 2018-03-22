@@ -73,7 +73,7 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
 
         $umapper = new \App\Frontend\UserMapper($this->em);
         $uploader = $umapper->getUserById($bentity->getUserId());
-        if($uploader) {
+        if ($uploader) {
             $response_vars['media_uploader'] = $uploader->getUsername();
         }
 

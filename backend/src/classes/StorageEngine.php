@@ -16,7 +16,7 @@ abstract class StorageEngine
         $this->log = $log;
     }
 
-    public abstract function put($local_path, $remote_path);
+    abstract public function put($local_path, $remote_path);
 
-    public abstract function get($remote_path);
+    abstract public function get($remote_path);
 }

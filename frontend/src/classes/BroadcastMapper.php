@@ -79,8 +79,7 @@ class BroadcastMapper extends Mapper
     {
         $query = $this->em->createQuery('
             UPDATE App\Frontend\Entity\BroadcastEntity t
-            SET t.views = t.views + 1 WHERE t.id = ?1'
-        );
+            SET t.views = t.views + 1 WHERE t.id = ?1');
         $query->setParameter(1, $id);
         $query->execute();
     }

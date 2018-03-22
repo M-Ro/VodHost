@@ -32,7 +32,7 @@ class VProcessorWorker extends Worker
     public function run()
     {
         /* Callback function everytime we receive a task from the queue */
-        $callback = function($msg) {
+        $callback = function ($msg) {
             $this->log->debug("Received task for processing: " . $msg->body . PHP_EOL);
 
             // Acknowledge job received
@@ -44,7 +44,7 @@ class VProcessorWorker extends Worker
 
             /* Retrieve information from the frontend about the job */
             $broadcast_details = $this->api->getBroadcastInfo($id);
-            if(!$broadcast_details) {
+            if (!$broadcast_details) {
                 return;
             }
 
@@ -55,16 +55,15 @@ class VProcessorWorker extends Worker
             $url = $this->config['server_domain'] . '/uploads/processing/' . $broadcast_details['filename'];
             $path = $broadcast_details['filename'];
 
-            $fp = fopen ($path, 'w+');
-            $curl_handle = curl_init(str_replace(" ","%20", $url));
-            curl_setopt($curl_handle, CURLOPT_FILE, $fp); 
+            $fp = fopen($path, 'w+');
+            $curl_handle = curl_init(str_replace(" ", "%20", $url));
+            curl_setopt($curl_handle, CURLOPT_FILE, $fp);
             curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
             $ret = curl_exec($curl_handle);
             curl_close($curl_handle);
             fclose($fp);
 
-            if(!$ret)
-            {
+            if (!$ret) {
                 $this->log->error("Could not fetch video for processing: " . $url . PHP_EOL);
                 return;
             }
@@ -112,7 +111,7 @@ class VProcessorWorker extends Worker
         $this->channel->basic_consume('vprocessing', '', false, false, false, false, $callback);
 
         /* Start processing jobs */
-        while(count($this->channel->callbacks)) {
+        while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
     }
@@ -120,7 +119,7 @@ class VProcessorWorker extends Worker
     private function pushToStorage($settings, $id)
     {
         /* First, upload the thumbnails we generated */
-        for($i=0; $i<$settings['thumbcount']; $i++) {
+        for ($i=0; $i<$settings['thumbcount']; $i++) {
             $keyname = "thumb/" . $id . '/' . "thumb_$i.jpg";
             $path = $settings['target'] . "thumb_$i.jpg";
             $this->storage->put($path, $keyname);

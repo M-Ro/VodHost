@@ -91,5 +91,4 @@ class UserSessionHandler
             return $admin->getValue();
         }
     }
-
 }

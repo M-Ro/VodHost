@@ -98,12 +98,12 @@ class BroadcastEntity implements \JsonSerializable
         $this->description = $data['description'];
         $this->state = $data['state'];
 
-        if(isset($data['views'])) {
+        if (isset($data['views'])) {
             $this->views = $data['views'];
         } else {
             $this->views = 0;
         }
-        if(isset($data['upload_date'])) {
+        if (isset($data['upload_date'])) {
             $this->upload_date = $data['upload_date'];
         } else {
             $this->upload_date = new \DateTime("now");
