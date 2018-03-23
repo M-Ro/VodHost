@@ -57,6 +57,12 @@ class UserEntity
      */
     protected $hash;
 
+    /**
+     * @var datetime
+     * @ORM\Column(name="date_registered", type="datetime")
+     */
+    protected $date_registered;
+
 
     /**
      * Construct class from data array
@@ -75,6 +81,7 @@ class UserEntity
         $this->admin = false;
         $this->activated = true;
         $this->hash = bin2hex(random_bytes(16));
+        $this->date_registered = new \DateTime("now");
     }
 
     public function getArrayCopy()
@@ -105,6 +112,11 @@ class UserEntity
     public function getActivated()
     {
         return $this->activated;
+    }
+
+    public function getDateRegistered()
+    {
+        return $this->date_registered;
     }
 
     public function getAdmin()

@@ -64,7 +64,8 @@ $app->get('/api/account/getinfo', function (Request $request, Response $response
     $user_data = [
         'username' => $user->getUsername(),
         'email' => $user->getEmail(),
-        'activated' => $user->getActivated()
+        'activated' => $user->getActivated(),
+        'dateRegistered' => $user->getDateRegistered()->format('Y-m-d')
     ];
 
     // User uploaded video information
