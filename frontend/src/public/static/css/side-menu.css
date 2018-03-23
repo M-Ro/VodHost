@@ -1,0 +1,213 @@
+/*
+This is the parent `<div>` that contains the menu and the content area.
+*/
+#layout {
+    position: relative;
+    padding-left: 2em;
+    padding-right: 2em;
+}
+
+.content {
+    margin: 0 auto;
+    margin-left: 4em;
+    padding: 0 2em;
+    max-width: 800px;
+    min-width: 600px;
+    min-height: 500px;
+    margin-bottom: 50px;
+    line-height: 1.6em;
+    background: #fff;
+    box-shadow: 3px 3px #e3e3e3;
+    float: left;
+    display: inline-block;
+    overflow-y: auto;
+}
+
+.header {
+     margin: 0;
+     color: #333;
+     text-align: center;
+     padding: 2.5em 2em 0;
+     border-bottom: 1px solid #eee;
+ }
+    .header h1 {
+        margin: 0.2em 0;
+        font-size: 3em;
+        font-weight: 300;
+    }
+     .header h2 {
+        font-weight: 300;
+        color: #ccc;
+        padding: 0;
+        margin-top: 0;
+    }
+
+.content-subhead {
+    margin: 50px 0 20px 0;
+    font-weight: 300;
+    color: #888;
+}
+
+#menu {
+    width: 200px;
+    max-width: 200px;
+    background: #fafafa;
+    box-shadow: 3px 3px #e3e3e3;
+    border-radius: 12px;
+    float: left;
+}
+    /*
+    All anchors inside the menu should be styled like this.
+    */
+    #menu a {
+        color: #555;
+        border: none;
+        padding: 1em 0 1em 0.6em;
+    }
+
+    /*
+    Remove all background/borders, since we are applying them to #menu.
+    */
+     #menu .pure-menu,
+     #menu .pure-menu ul {
+        border: none;
+        background: transparent;
+    }
+
+    /*
+    Add that light border to separate items into groups.
+    */
+    #menu .pure-menu ul,
+    #menu .pure-menu .menu-item-divided {
+        border-top: 1px solid #dddddd;
+    }
+        /*
+        Change color of the anchor links on hover/focus.
+        */
+        #menu .pure-menu li a:hover,
+        #menu .pure-menu li a:focus {
+            background: #eef
+        }
+
+    /*
+    This styles the selected menu item `<li>`.
+    */
+    #menu .pure-menu-selected,
+    #menu .pure-menu-heading {
+        background: #2d3e50;
+    }
+        /*
+        This styles a link within a selected menu item `<li>`.
+        */
+        #menu .pure-menu-selected a {
+            color: #fff;
+        }
+
+    /*
+    This styles the menu heading.
+    */
+    #menu .pure-menu-heading {
+        font-size: 100%;
+        color: #eee;
+        margin: 0;
+        border-radius: 4px;
+    }
+
+.videogrid {
+    width: 750px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    display: inline-block;
+}
+
+.videogrid img {
+    float: left;
+}
+
+.videogrid .videoinfo {
+    float: left;
+    padding-left: 1em;
+    padding-right: 1em;
+    width: 300px;
+    overflow: hidden;
+}
+
+.videogrid .videostats {
+    float: left;
+    padding: 0 1em 0 1em;
+    border-right: 1px solid #eee;
+}
+    .videostats p, .videoinfo p {
+        padding: 0em;
+        margin: 0;
+        color: #888;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+.videogrid .videoactions {
+    float: right;
+    padding-right: 1em;
+}
+    
+    .videoactions .pure-button {
+        background-color: #f3f3f3;
+        color: #888;
+        margin: 0 0 8px 0;
+        border-radius: 4px;
+        width: 80px;
+        font-size: 12px;
+        font-weight: normal;
+    }
+
+.editoverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+    overflow: hidden;
+    background-color: #000;
+    opacity: 0.7;
+}
+
+.editpanel {
+    position: absolute;
+    left: calc(50% - 400px);
+    top: calc(50% - 300px);
+    z-index: 10;
+    background-color: #fff;
+    width: 800px;
+    height: 600px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.editpanel-left {
+    width: 240px;
+    height: calc(100% - 6em);
+    padding: 8em 1em 0 1em;
+    margin: 3em 0 3em 0;
+    float: left;
+    border-right: 2px solid #f3f3f3;
+    text-align: right;
+}
+
+.editpanel-right {
+    float: left;
+    text-align: center;
+    width: 550px;
+    height: calc(100% - 6em);
+    padding: 0 1em 0 1em;
+    margin: 3em 0 2em 0;
+}
+    .editpanel-right .pure-form {
+        height: calc(100% - 6em);
+    }
+
+    .editpanel-right button {
+        float: right;
+        margin-right: 1em;
+    }

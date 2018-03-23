@@ -97,3 +97,16 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
 
         return $response;
 });
+
+$app->get('/account', function (Request $request, Response $response, array $args) {
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+
+    $response = $this->view->render(
+        $response,
+        'account.phtml',
+        ['loggedIn' => $loggedIn, 'username' => $username, 'content_url' => $this->get('content_url_root')]
+    );
+
+    return $response;
+});
