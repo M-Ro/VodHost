@@ -55,6 +55,17 @@ class BroadcastMapper extends Mapper
     }
 
     /**
+     * Delete a BroadcastEntity from the database
+     *
+     * @param BroadcastEntity $broadcast The BroadcastEntity object
+     */
+    public function delete(BroadcastEntity $broadcast)
+    {
+        $this->em->remove($broadcast);
+        $this->em->flush();
+    }
+
+    /**
      * Update the visibility status of a broadcast
      *
      * @param $id - id of the broadcast
@@ -89,7 +100,7 @@ class BroadcastMapper extends Mapper
      *
      * @param $id - id of the broadcast
      */
-    public function delete($id)
+    public function deleteById($id)
     {
         $this->em->createQueryBuilder()
             ->delete(BroadcastEntity::class, 'u')

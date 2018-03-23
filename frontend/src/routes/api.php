@@ -2,6 +2,8 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use PhpAmqpLib\Message\AMQPMessage;
+
 $app->post('/api/upload', function (Request $request, Response $response, array $args) {
     $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
     $username = \App\Frontend\UserSessionHandler::getUsername($request);
@@ -93,6 +95,12 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
     $broadcast_description = filter_var($data['description'], FILTER_SANITIZE_STRING);
     $broadcast_visibility = filter_var($data['visibility'], FILTER_SANITIZE_STRING);
 
+    if (!isset($broadcast_id) || !isset($broadcast_title) || 
+        !isset($broadcast_description) || !isset($broadcast_visibility)) {
+        $this->logger->warning("/api/broadcast/editdetails invalid postdata provided" . PHP_EOL);
+        return $response->withStatus(400);
+    }
+
     /* Fetch the user */
     $umapper = new \App\Frontend\UserMapper($this->em);
     $user = $umapper->getUserByUsername($username);
@@ -134,6 +142,66 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
 
     $this->logger->debug("Edited details for broadcast $broadcast_id (Title: $broadcast_title)
         (Description: $broadcast_description) (Vis: $broadcast_visibility)" . PHP_EOL);
-    
+
+    return $response->withStatus(200);
+});
+
+$app->post('/api/broadcast/remove', function (Request $request, Response $response, array $args) {
+    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    if (!$loggedIn) {
+        return $response->withStatus(403);
+    }
+
+    /* Validate post data */
+    $data = $request->getParsedBody();
+    $broadcast_id = filter_var($data['videoid'], FILTER_SANITIZE_STRING);
+
+    if (!isset($broadcast_id)) {
+        $this->logger->warning("/api/broadcast/remove invalid postdata provided" . PHP_EOL);
+        return $response->withStatus(400);
+    }
+
+    /* Fetch the user */
+    $umapper = new \App\Frontend\UserMapper($this->em);
+    $user = $umapper->getUserByUsername($username);
+    if (!$user) {
+        $this->logger->error("User " . $username . " not found in database" . PHP_EOL);
+        return $response->withStatus(500);
+    }
+    $uid = $user->getId();
+
+    /* Fetch the broadcast */
+    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $broadcast = $bmapper->getBroadcastById($broadcast_id);
+    if (!$broadcast) {
+        $this->logger->warning("Could not find broadcast for id: " . $broadcast_id . PHP_EOL);
+        return $response->withStatus(500);
+    }
+
+    /* Make sure the user is the owner of this video */
+    if ($broadcast->getUserId() != $user->getId()) {
+        $this->logger->warning("User is not owner for broadcast edit: " . $username . " " . $broadcast_id . PHP_EOL);
+        return $response->withStatus(500);
+    }
+
+    /* Create a job to purge assets for this video */
+    $task_data = [
+        'id' => $broadcast_id
+    ];
+
+    $msg = new AMQPMessage(
+        json_encode($task_data),
+        array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT)
+    );
+
+    $this->mq->basic_publish($msg, '', 'purge_broadcast');
+
+    // Delete the broadcast
+    $bmapper->delete($broadcast);
+
+    // Finalize and return
+    $this->logger->debug("Removed broadcast $broadcast_id" . PHP_EOL);
+
     return $response->withStatus(200);
 });
