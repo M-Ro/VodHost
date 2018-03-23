@@ -70,8 +70,12 @@ class UploadHandler
             /* File has been finalized, map a broadcast and create final response */
             $file = $req->getFile();
 
+            $data = $request->getParsedBody();
+
             $mediainfo = [
-                'title' => $file['name'],
+                'title' => $data['title'],
+                'desc' => $data['desc'],
+                'vis' => $data['vis'],
                 'filename' => $file['name']
             ];
             $broadcast = $this->createBroadcast($request, $mediainfo);
@@ -115,6 +119,12 @@ class UploadHandler
         }
 
         $bmapper = new BroadcastMapper($this->em);
+        
+        // Convert 'public' 'private' visibility to bool true/false
+        $vis = false;
+        if ($mediainfo['vis'] == 'Public') {
+            $vis = true;
+        }
 
         /* Create a broadcast entity */
         $broadcast_data = [
@@ -122,10 +132,10 @@ class UploadHandler
             'user_id' => $uid,
             'title' => $mediainfo['title'],
             'filename' => $mediainfo['filename'],
-            'description' => 'Description text goes here',
+            'description' => $mediainfo['desc'],
             'state' => 'processing',
             'length' => 0,
-            'visibility' => true
+            'visibility' => $vis
         ];
         $broadcast = new Entity\BroadcastEntity($broadcast_data);
 
