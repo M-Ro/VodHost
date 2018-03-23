@@ -169,4 +169,19 @@ class BroadcastEntity implements \JsonSerializable
     {
         $this->state = $state;
     }
+
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
+    }
+
+    public function setDescription(string $desc)
+    {
+        $this->description = $desc;
+    }
+
+    public function setVisibility(string $vis)
+    {
+        $this->visibility = $vis;
+    }
 }
