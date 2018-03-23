@@ -213,7 +213,7 @@ app.controller('accountCtrl', function($scope, $http, $window, $parse) {
             <h2 class="content-subhead">Broadcasts</h2>
 
             	<div class="videogrid" ng-repeat="video in broadcasts">
-            		<img height="90px" class="videothumb" ng-src="{{contenturl + '/thumb/' + video.id + '/thumb_2.jpg'}}"></img>
+            		<a href="/view/{{video.id}}"><img height="90px" class="videothumb" ng-src="{{contenturl + '/thumb/' + video.id + '/thumb_2.jpg'}}"></img></a>
             		<div class="videostats">
             			<p>Views: {{video.views}}</p>
             			<p>Uploaded: {{video.upload_date}}</p>
