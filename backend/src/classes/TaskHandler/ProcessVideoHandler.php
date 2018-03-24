@@ -1,6 +1,6 @@
 <?php
 
-namespace VodHost;
+namespace VodHost\TaskHandler;
 
 use VodHost\Storage;
 use VodHost\Processing;
@@ -8,7 +8,7 @@ use VodHost\Processing;
 /**
  * Worker class for the processing of uploaded video streams.
  */
-class VProcessorWorker extends Worker
+class ProcessVideoHandler extends TaskHandler
 {
     private $storage;
 

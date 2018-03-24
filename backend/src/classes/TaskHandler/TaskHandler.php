@@ -1,11 +1,11 @@
 <?php
 
-namespace VodHost;
+namespace VodHost\TaskHandler;
 
 /**
  * Represents the functionality of a background worker.
  */
-abstract class Worker
+abstract class TaskHandler
 {
     protected $log;
 
@@ -23,7 +23,7 @@ abstract class Worker
     public function __construct(array $config)
     {
         $this->config = $config;
-        $this->api = new APIMapper($config);
+        $this->api = new \VodHost\APIMapper($config);
 
         $this->connectLogger();
         $this->connectTaskQueue();
