@@ -13,7 +13,7 @@ if (PHP_SAPI == 'cli-server') {
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../settings.php';
 
 $app = new \Slim\App(['settings' => $config]);
@@ -49,7 +49,7 @@ $container['em'] = function ($c) {
     global $config;
 
     $doctrine_conf = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
-        ['src/classes/Entity'],
+        ['../src/classes/Entity'],
         true,
         __DIR__ . '/cache/proxies',
         null,
@@ -76,12 +76,12 @@ $container['mq'] = function ($c) {
     return $channel;
 };
 
-require __DIR__ . '/../routes/web.php';
+require __DIR__ . '/../src/routes/web.php';
 
-require __DIR__ . '/../routes/account.php';
+require __DIR__ . '/../src/routes/account.php';
 
-require __DIR__ . '/../routes/api.php';
+require __DIR__ . '/../src/routes/api.php';
 
-require __DIR__ . '/../routes/backend.php';
+require __DIR__ . '/../src/routes/backend.php';
 
 $app->run();

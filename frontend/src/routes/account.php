@@ -32,7 +32,7 @@ $app->post(
         $user_data['password'] = password_hash($user_data['password'], PASSWORD_DEFAULT);
 
         /* Check whether an account already exists with this email or username */
-        $umapper = new \EntityMapper\UserMapper($this->em);
+        $umapper = new EntityMapper\UserMapper($this->em);
         $email_exists = $umapper->getUserByEmail($user_data['email']);
         $username_exists = $umapper->getUserByUsername($user_data['username']);
 
