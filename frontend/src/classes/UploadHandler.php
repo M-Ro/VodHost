@@ -112,7 +112,7 @@ class UploadHandler
     private function createBroadcast(\Slim\Http\Request $request, array $mediainfo)
     {
         /* Get UserID of file uploader */
-        $uid = UserSessionHandler::getId($request);
+        $uid = Authentication\UserSessionHandler::getId($request);
         if ($uid < 0) { // This should not be possible
             $this->logger->notice("UploadHandler: " . "Warning: Invalid user uploaded file" . PHP_EOL);
             return;

@@ -2,7 +2,7 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use \VodHost\BackendAuthentication as BackendAuthentication;
+use \VodHost\Authentication\BackendAuthentication as BackendAuthentication;
 
 use \VodHost\EntityMapper;
 use \VodHost\Entity;

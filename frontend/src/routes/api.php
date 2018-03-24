@@ -6,10 +6,11 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 use VodHost\Entity;
 use VodHost\EntityMapper;
+use VodHost\Authentication;
 
 $app->post('/api/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
@@ -50,8 +51,8 @@ $app->get('/api/fetch/recentvideos', function (Request $request, Response $respo
 });
 
 $app->get('/api/account/getinfo', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
@@ -86,8 +87,8 @@ $app->get('/api/account/getinfo', function (Request $request, Response $response
 });
 
 $app->post('/api/broadcast/editdetails', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
@@ -151,8 +152,8 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
 });
 
 $app->post('/api/broadcast/remove', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }

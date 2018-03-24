@@ -6,10 +6,11 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \VodHost\Entity;
 use \VodHost\EntityMapper;
 use \VodHost\Task;
+use \VodHost\Authentication;
 
 $app->get('/logout', function (Request $request, Response $response, array $args) {
 
-        $response = \VodHost\UserSessionHandler::purge($response);
+        $response = Authentication\UserSessionHandler::purge($response);
 
         $response = $response->withRedirect("/");
         return $response;
@@ -89,7 +90,7 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
         }
 
         if (password_verify($user_data['password'], $user->getPassword())) {
-            $response = \VodHost\UserSessionHandler::login($response, $user);
+            $response = Authentication\UserSessionHandler::login($response, $user);
 
             $message = [
                 'state' => 'success',
@@ -110,8 +111,8 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
 });
 
 $app->get('/account', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
 
     $response = $this->view->render(
         $response,

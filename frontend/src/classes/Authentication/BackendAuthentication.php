@@ -1,6 +1,6 @@
 <?php
 
-namespace VodHost;
+namespace VodHost\Authentication;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 

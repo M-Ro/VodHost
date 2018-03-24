@@ -1,14 +1,15 @@
 <?php
-namespace VodHost;
+namespace VodHost\Authentication;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\FigRequestCookies;
 use Dflydev\FigCookies\Cookie;
 use Dflydev\FigCookies\SetCookie;
 
+use VodHost\Entity;
+
 class UserSessionHandler
 {
-
     public static function isLoggedIn(\Slim\Http\Request $request)
     {
         $validLogin = FigRequestCookies::get($request, 'logged_in');

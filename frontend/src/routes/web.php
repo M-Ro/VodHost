@@ -3,10 +3,11 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 use \VodHost\EntityMapper;
+use \VodHost\Authentication;
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
 
     $response = $this->view->render(
         $response,
@@ -18,7 +19,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 });
 
 $app->get('/login', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
     if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
@@ -29,7 +30,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 });
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
     if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
@@ -40,8 +41,8 @@ $app->get('/register', function (Request $request, Response $response, array $ar
 });
 
 $app->get('/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         $response = $response->withRedirect("/");
         return $response;
@@ -53,8 +54,8 @@ $app->get('/upload', function (Request $request, Response $response, array $args
 
 $app->get('/view/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
-    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
-    $username = \VodHost\UserSessionHandler::getUsername($request);
+    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
+    $username = Authentication\UserSessionHandler::getUsername($request);
 
     $response_vars = [
         'loggedIn' => $loggedIn,
