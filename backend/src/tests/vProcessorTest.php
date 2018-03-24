@@ -1,6 +1,6 @@
 <?php
 
-namespace VodHost\Backend\Tests;
+namespace VodHost\Tests;
 
 require_once 'src/classes/vprocessor.php';
 require_once 'vendor/autoload.php';

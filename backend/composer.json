@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "VodHost\\Backend\\": "src/classes/"
+            "VodHost\\": "src/classes/"
         }
     }
 }

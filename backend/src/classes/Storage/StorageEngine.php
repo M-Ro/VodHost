@@ -1,6 +1,6 @@
 <?php
 
-namespace VodHost\Backend;
+namespace VodHost\Storage;
 
 /**
  * An abstract class that represents the functionality of storing processed files.

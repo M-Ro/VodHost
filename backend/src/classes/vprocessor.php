@@ -1,6 +1,6 @@
 <?php
 
-namespace VodHost\Backend;
+namespace VodHost;
 
 /**
  * Responsible for all videostream processing operations

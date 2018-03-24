@@ -1,6 +1,8 @@
 <?php
 
-namespace VodHost\Backend;
+namespace VodHost;
+
+use VodHost\Storage;
 
 require_once 'vprocessor.php';
 
@@ -22,7 +24,7 @@ class VProcessorWorker extends Worker
             'secret' => $this->config['s3_secret']
         ];
 
-        $this->storage = new S3StorageEngine($s3_setup, $this->log);
+        $this->storage = new Storage\S3StorageEngine($s3_setup, $this->log);
     }
 
     /**

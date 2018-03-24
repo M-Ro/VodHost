@@ -9,7 +9,7 @@ if ($argc != 2) {
     return 1;
 }
 
-$classname = '\\VodHost\\Backend\\' . $argv[1];
+$classname = '\\VodHost\\' . $argv[1];
 
 $worker = new $classname($config);
 $worker->run();

@@ -1,6 +1,6 @@
 <?php
 
-namespace VodHost\Backend;
+namespace VodHost;
 
 /**
  * Represents the functionality of a background worker.
