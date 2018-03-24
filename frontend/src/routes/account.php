@@ -46,6 +46,13 @@ $app->post(
 
         $this->logger->info("Registered user: " . $user->getEmail() . PHP_EOL);
 
+        /* Send verification email */
+        $activation = new \App\Frontend\Task\ActivationEmail(
+            $this->mq, $user->getEmail(), $user->getUsername(), $user->getHash());
+
+        $activation->publish();
+
+        /* Return success response to client */
         $message = [
             'state' => 'success',
             'message' => ''
