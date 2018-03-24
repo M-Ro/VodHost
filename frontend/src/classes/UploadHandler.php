@@ -1,5 +1,5 @@
 <?php
-namespace App\Frontend;
+namespace VodHost;
 
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -118,7 +118,7 @@ class UploadHandler
             return;
         }
 
-        $bmapper = new BroadcastMapper($this->em);
+        $bmapper = new EntityMapper\BroadcastMapper($this->em);
         
         // Convert 'public' 'private' visibility to bool true/false
         $vis = false;

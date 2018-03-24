@@ -3,9 +3,13 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use \VodHost\Entity;
+use \VodHost\EntityMapper;
+use \VodHost\Task;
+
 $app->get('/logout', function (Request $request, Response $response, array $args) {
 
-        $response = \App\Frontend\UserSessionHandler::purge($response);
+        $response = \VodHost\UserSessionHandler::purge($response);
 
         $response = $response->withRedirect("/");
         return $response;
@@ -27,7 +31,7 @@ $app->post(
         $user_data['password'] = password_hash($user_data['password'], PASSWORD_DEFAULT);
 
         /* Check whether an account already exists with this email or username */
-        $umapper = new \App\Frontend\UserMapper($this->em);
+        $umapper = new \EntityMapper\UserMapper($this->em);
         $email_exists = $umapper->getUserByEmail($user_data['email']);
         $username_exists = $umapper->getUserByUsername($user_data['username']);
 
@@ -41,13 +45,13 @@ $app->post(
         }
 
         /* Create the actual user */
-        $user = new \App\Frontend\Entity\UserEntity($user_data);
+        $user = new Entity\UserEntity($user_data);
         $umapper->save($user);
 
         $this->logger->info("Registered user: " . $user->getEmail() . PHP_EOL);
 
         /* Send verification email */
-        $activation = new \App\Frontend\Task\ActivationEmail(
+        $activation = new Task\ActivationEmail(
             $this->mq, $user->getEmail(), $user->getUsername(), $user->getHash());
 
         $activation->publish();
@@ -72,7 +76,7 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
         ];
 
         /* Attempt to find user by email address then verify password matches */
-        $umapper = new \App\Frontend\UserMapper($this->em);
+        $umapper = new EntityMapper\UserMapper($this->em);
         $user = $umapper->getUserByEmail($user_data['email']);
 
         if (!$user) {
@@ -85,7 +89,7 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
         }
 
         if (password_verify($user_data['password'], $user->getPassword())) {
-            $response = \App\Frontend\UserSessionHandler::login($response, $user);
+            $response = \VodHost\UserSessionHandler::login($response, $user);
 
             $message = [
                 'state' => 'success',
@@ -106,8 +110,8 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
 });
 
 $app->get('/account', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
 
     $response = $this->view->render(
         $response,

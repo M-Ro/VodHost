@@ -4,14 +4,17 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 use PhpAmqpLib\Message\AMQPMessage;
 
+use VodHost\Entity;
+use VodHost\EntityMapper;
+
 $app->post('/api/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
 
-    $uploadHandler = new \App\Frontend\UploadHandler(
+    $uploadHandler = new \VodHost\UploadHandler(
         $this->get('upload_directory'),
         $this->get('temp_directory'),
         $this->logger,
@@ -28,8 +31,8 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
 // FIXME: This needs to return recentvideos, currently returns all videos
 // FIXME just convert this all to string array instead of modifying the entity object
 $app->get('/api/fetch/recentvideos', function (Request $request, Response $response, array $args) {
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
-    $umapper = new \App\Frontend\UserMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
+    $umapper = new EntityMapper\UserMapper($this->em);
 
     $broadcasts = $bmapper->getBroadcasts();
     foreach ($broadcasts as $b) {
@@ -47,13 +50,13 @@ $app->get('/api/fetch/recentvideos', function (Request $request, Response $respo
 });
 
 $app->get('/api/account/getinfo', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
 
-    $umapper = new \App\Frontend\UserMapper($this->em);
+    $umapper = new EntityMapper\UserMapper($this->em);
     $user = $umapper->getUserByUsername($username);
 
     if (!$user) {
@@ -69,7 +72,7 @@ $app->get('/api/account/getinfo', function (Request $request, Response $response
     ];
 
     // User uploaded video information
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $broadcasts = $bmapper->getBroadcastsByUserId($user->getId());
 
     $arr = [
@@ -83,8 +86,8 @@ $app->get('/api/account/getinfo', function (Request $request, Response $response
 });
 
 $app->post('/api/broadcast/editdetails', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
@@ -103,7 +106,7 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
     }
 
     /* Fetch the user */
-    $umapper = new \App\Frontend\UserMapper($this->em);
+    $umapper = new EntityMapper\UserMapper($this->em);
     $user = $umapper->getUserByUsername($username);
     if (!$user) {
         $this->logger->error("User " . $username . " not found in database" . PHP_EOL);
@@ -112,7 +115,7 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
     $uid = $user->getId();
 
     /* Fetch the broadcast */
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $broadcast = $bmapper->getBroadcastById($broadcast_id);
     if (!$broadcast) {
         $this->logger->warning("Could not find broadcast for id: " . $broadcast_id . PHP_EOL);
@@ -148,8 +151,8 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
 });
 
 $app->post('/api/broadcast/remove', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         return $response->withStatus(403);
     }
@@ -164,7 +167,7 @@ $app->post('/api/broadcast/remove', function (Request $request, Response $respon
     }
 
     /* Fetch the user */
-    $umapper = new \App\Frontend\UserMapper($this->em);
+    $umapper = new EntityMapper\UserMapper($this->em);
     $user = $umapper->getUserByUsername($username);
     if (!$user) {
         $this->logger->error("User " . $username . " not found in database" . PHP_EOL);
@@ -173,7 +176,7 @@ $app->post('/api/broadcast/remove', function (Request $request, Response $respon
     $uid = $user->getId();
 
     /* Fetch the broadcast */
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $broadcast = $bmapper->getBroadcastById($broadcast_id);
     if (!$broadcast) {
         $this->logger->warning("Could not find broadcast for id: " . $broadcast_id . PHP_EOL);

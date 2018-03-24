@@ -2,9 +2,11 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use \VodHost\EntityMapper;
+
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
 
     $response = $this->view->render(
         $response,
@@ -16,7 +18,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 });
 
 $app->get('/login', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
     if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
@@ -27,7 +29,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 });
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
     if ($loggedIn == true) {
         $response = $response->withRedirect("/");
         return $response;
@@ -38,8 +40,8 @@ $app->get('/register', function (Request $request, Response $response, array $ar
 });
 
 $app->get('/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
         $response = $response->withRedirect("/");
         return $response;
@@ -51,15 +53,15 @@ $app->get('/upload', function (Request $request, Response $response, array $args
 
 $app->get('/view/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
-    $loggedIn = \App\Frontend\UserSessionHandler::isLoggedIn($request);
-    $username = \App\Frontend\UserSessionHandler::getUsername($request);
+    $loggedIn = \VodHost\UserSessionHandler::isLoggedIn($request);
+    $username = \VodHost\UserSessionHandler::getUsername($request);
 
     $response_vars = [
         'loggedIn' => $loggedIn,
         'username' => $username
     ];
 
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $bentity = $bmapper->getBroadcastById($id);
     if (!$bentity) {
         $this->logger->addInfo("/view/ invalid broadcast id: " . $id . PHP_EOL);
@@ -71,7 +73,7 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
         $response_vars['media_views'] = $bentity->getViews();
         $response_vars['media_uploader'] = '[Deleted]';
 
-        $umapper = new \App\Frontend\UserMapper($this->em);
+        $umapper = new EntityMapper\UserMapper($this->em);
         $uploader = $umapper->getUserById($bentity->getUserId());
         if ($uploader) {
             $response_vars['media_uploader'] = $uploader->getUsername();

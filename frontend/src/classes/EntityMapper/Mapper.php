@@ -1,5 +1,5 @@
 <?php
-namespace App\Frontend;
+namespace VodHost\EntityMapper;
 
 abstract class Mapper
 {

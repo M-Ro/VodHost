@@ -1,5 +1,5 @@
 <?php 
-namespace App\Frontend\Task;
+namespace VodHost\Task;
 
 class ActivationEmail extends EmailTask
 {

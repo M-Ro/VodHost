@@ -1,7 +1,7 @@
 <?php
-namespace App\Frontend;
+namespace VodHost\EntityMapper;
 
-use App\Frontend\Entity\UserEntity as UserEntity;
+use VodHost\Entity\UserEntity as UserEntity;
 
 class UserMapper extends Mapper
 {

@@ -1,11 +1,11 @@
 <?php
-namespace App\Frontend\Entity;
+namespace VodHost\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Class BroadcastEntity
- * @package App\Backend
+ * @package VodHost\Backend
  *
  * @ORM\Table(name="users")
  * @ORM\Entity

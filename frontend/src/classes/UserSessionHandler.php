@@ -1,5 +1,5 @@
 <?php
-namespace App\Frontend;
+namespace VodHost;
 
 use Dflydev\FigCookies\FigResponseCookies;
 use Dflydev\FigCookies\FigRequestCookies;

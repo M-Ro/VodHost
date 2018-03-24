@@ -1,5 +1,5 @@
 <?php 
-namespace App\Frontend\Task;
+namespace VodHost\Task;
 
 abstract class EmailTask extends Task
 {

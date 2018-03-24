@@ -1,7 +1,7 @@
 <?php
-namespace App\Frontend;
+namespace VodHost\EntityMapper;
 
-use App\Frontend\Entity\BroadcastEntity as BroadcastEntity;
+use VodHost\Entity\BroadcastEntity as BroadcastEntity;
 
 class BroadcastMapper extends Mapper
 {
@@ -89,7 +89,7 @@ class BroadcastMapper extends Mapper
     public function incrementBroadcastViews($id)
     {
         $query = $this->em->createQuery('
-            UPDATE App\Frontend\Entity\BroadcastEntity t
+            UPDATE VodHost\Entity\BroadcastEntity t
             SET t.views = t.views + 1 WHERE t.id = ?1');
         $query->setParameter(1, $id);
         $query->execute();

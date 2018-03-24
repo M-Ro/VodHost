@@ -2,7 +2,10 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use \App\Frontend\BackendAuthentication as BackendAuthentication;
+use \VodHost\BackendAuthentication as BackendAuthentication;
+
+use \VodHost\EntityMapper;
+use \VodHost\Entity;
 
 /**
  * Returns a json response containing the md5sum of the unprocessed video
@@ -24,7 +27,7 @@ $app->get('/api/backend/retrieve/{id}', function (Request $request, Response $re
         return $response->withStatus(400);
     }
 
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $broadcast = $bmapper->getBroadcastById($id);
 
     if (!$broadcast) {
@@ -76,7 +79,7 @@ $app->get('/api/backend/tagprocessed/{id}', function (Request $request, Response
     }
 
     /* Delete unprocessed uploaded file */
-    $bmapper = new \App\Frontend\BroadcastMapper($this->em);
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $broadcast = $bmapper->getBroadcastById($id);
 
     if (!$broadcast) {
