@@ -3,7 +3,7 @@
 namespace VodHost\TaskHandler;
 
 require 'vendor/autoload.php';
-require '../frontend/src/settings.php';
+require 'settings.php';
 
 class TaskHandlerFactory
 {
