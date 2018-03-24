@@ -3,8 +3,7 @@
 namespace VodHost;
 
 use VodHost\Storage;
-
-require_once 'vprocessor.php';
+use VodHost\Processing;
 
 /**
  * Worker class for the processing of uploaded video streams.
@@ -70,7 +69,7 @@ class VProcessorWorker extends Worker
                 return;
             }
 
-            $vprocessor = new VProcessor($path);
+            $vprocessor = new Processing\VProcessor($path);
 
             $v_setup = [
                 'width' => '320',
@@ -90,7 +89,7 @@ class VProcessorWorker extends Worker
             $vprocessor->transmuxToMP4($v_setup);
             $this->log->debug("Transmuxed content to MP4 for id " . $data['broadcastid'] . PHP_EOL);
 
-            $vprocessor = new VProcessor($v_setup['target'] . $v_setup['output_filename']);
+            $vprocessor = new Processing\VProcessor($v_setup['target'] . $v_setup['output_filename']);
 
             /* We generate the thumbnails *after* transmuxing as ffmpeg can't seek some filetypes */
             $vprocessor->generateThumbnailSet($v_setup);

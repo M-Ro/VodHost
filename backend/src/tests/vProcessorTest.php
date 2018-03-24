@@ -2,7 +2,7 @@
 
 namespace VodHost\Tests;
 
-require_once 'src/classes/vprocessor.php';
+require_once 'src/classes/storage\VProcessor.php';
 require_once 'vendor/autoload.php';
 
 class VProcessorTest extends \PHPUnit_Framework_TestCase
@@ -13,7 +13,7 @@ class VProcessorTest extends \PHPUnit_Framework_TestCase
  
     protected function setUp()
     {
-        $this->vprocessor = new \VodHost\Backend\VProcessor("testdata/test_video.avi");
+        $this->vprocessor = new \VodHost\Processing\VProcessor("testdata/test_video.avi");
 
         $this->settings = [
             'width' => '320',
