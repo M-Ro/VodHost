@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC “-//W3C//DTD HTML 4.01 Transitional//EN” “http://www.w3.org/TR/html4/loose.dtd”>
+<html>
+<head>
+	<title>Activation Email</title>
+</head>
+
+
+<body>
+	<p>Dear <?php echo $username ?>,</p>
+	<p>Please click the link below to validate your account</p>
+	
+	<a href="<?php echo $domain . '/user/activate/' . $hash ?>"><?php echo $domain . '/user/activate/' . $hash ?></a>
+	
+	<p>Regards,</p>
+	<p>The VodHost Team</p>
+</body>
+</html>

@@ -48,5 +48,13 @@ $config = [
     'api_key' => 'key',
 
     's3_key' => '',
-    's3_secret' => ''
+    's3_secret' => '',
+
+    'mail' => [
+        'host' => 'myhost',
+        'port' => 587,
+        'username' => 'username',
+        'password' => 'password',
+        'security' => 'tls'
+    ]
 ];

@@ -13,6 +13,12 @@ abstract class EmailTask extends Task
 
     /**
      * @var string
+     * Subject of email
+     */
+    protected $subject;
+
+    /**
+     * @var string
      * Type of 'mail' being sent. Used to render the correct template
      */
     protected $mailtype;
@@ -21,22 +27,25 @@ abstract class EmailTask extends Task
      * Initialize
      * @param $mq - Reference to message/job queue
      * @param $address - Recipient Email Address
+     * @param $subject - Subject of email
      * @param $mailtype - Used by the worker to render the correct template
      */
-    public function __construct($mq, $address, $mailtype)
+    public function __construct($mq, $address, $subject, $mailtype)
     {
         parent::__construct($mq);
         $this->setQueue('mail_queue');
 
         $this->address = $address;
+        $this->subject = $subject;
         $this->mailtype = $mailtype;
     }
 
     public function decode($json_data)
     {
-        $values = __parent::decode($json_data);
+        $values = parent::decode($json_data);
 
         $this->address = $values['address'];
+        $this->subject = $values['subject'];
         $this->mailtype = $values['mailtype'];
 
         return $values;
@@ -50,5 +59,10 @@ abstract class EmailTask extends Task
     public function getMailtype()
     {
         return $this->mailtype;
+    }
+
+    public function getSubject()
+    {
+        return $this->subject;
     }
 }

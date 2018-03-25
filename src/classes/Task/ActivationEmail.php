@@ -21,18 +21,23 @@ class ActivationEmail extends EmailTask
      * @param $address - Recipient Email Address
      * @param $username - Recipient account username
      * @param $hash - Account authentication hash
+     * @param $json_data - Used if we are decoding an already sent task
      */
-    public function __construct($mq, $address, $username, $hash)
+    public function __construct($mq, $address, $username, $hash, $json_data = null)
     {
-        parent::__construct($mq, $address, 'activation');
+        if (!is_null($json_data)) {
+            $this->decode($json_data);
+        } else {
+            parent::__construct($mq, $address, 'Activation', 'ActivationEmail');
 
-        $this->username = $username;
-        $this->hash = $hash;
+            $this->username = $username;
+            $this->hash = $hash;
+        }
     }
 
     public function decode($json_data)
     {
-        $values = __parent::decode($json_data);
+        $values = parent::decode($json_data);
 
         $this->username = $values['username'];
         $this->hash = $values['hash'];
