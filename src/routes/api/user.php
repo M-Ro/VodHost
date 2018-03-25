@@ -1,23 +1,13 @@
 <?php
-
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 use \VodHost\Entity;
 use \VodHost\EntityMapper;
-use \VodHost\Task;
 use \VodHost\Authentication;
 
-$app->get('/logout', function (Request $request, Response $response, array $args) {
-
-        $response = Authentication\UserSessionHandler::purge($response);
-
-        $response = $response->withRedirect("/");
-        return $response;
-});
-
 $app->post(
-    '/api/signup',
+    '/api/user/signup',
     function (Request $request, Response $response, array $args) {
 
         $data = $request->getParsedBody();
@@ -67,7 +57,7 @@ $app->post(
     }
 );
 
-$app->post('/api/signin', function (Request $request, Response $response, array $args) {
+$app->post('/api/user/signin', function (Request $request, Response $response, array $args) {
 
         $data = $request->getParsedBody();
 
@@ -117,41 +107,38 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
         return $response->withJson($message, 200);
 });
 
-$app->get('/account', function (Request $request, Response $response, array $args) {
+$app->get('/api/user/getinfo', function (Request $request, Response $response, array $args) {
     $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
     $username = Authentication\UserSessionHandler::getUsername($request);
-
-    $response = $this->view->render(
-        $response,
-        'account.phtml',
-        ['loggedIn' => $loggedIn, 'username' => $username, 'content_url' => $this->get('content_url_root')]
-    );
-
-    return $response;
-});
-
-$app->get('/user/activate/{hash}', function (Request $request, Response $response, array $args) {
-    $hash = $args['hash'];
-    if(!$hash) {
-        $response->withStatus(400);
+    if (!$loggedIn) {
+        return $response->withStatus(403);
     }
 
     $umapper = new EntityMapper\UserMapper($this->em);
-    $user = $umapper->findUserByActivationHash($hash);
+    $user = $umapper->getUserByUsername($username);
 
-    $validCode = false;
-
-    if ($user) {
-        $validCode = true;
-
-        $user->setActivated(true);
-        $umapper->update($user);
+    if (!$user) {
+        return $response->withStatus(403);
     }
 
-    return $this->view->render(
-        $response,
-        'account_validated.phtml',
-        ['validCode' => $validCode, 'loggedIn' => false, 'content_url' => $this->get('content_url_root')]
-    );
-});
+    // User account information
+    $user_data = [
+        'username' => $user->getUsername(),
+        'email' => $user->getEmail(),
+        'activated' => $user->getActivated(),
+        'dateRegistered' => $user->getDateRegistered()->format('Y-m-d')
+    ];
 
+    // User uploaded video information
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
+    $broadcasts = $bmapper->getBroadcastsByUserId($user->getId());
+
+    $arr = [
+        'user' => $user_data,
+        'broadcasts' => $broadcasts
+    ];
+
+    $message = json_encode($arr);
+
+    return $response->withJson($message, 200);
+});

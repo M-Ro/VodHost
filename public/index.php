@@ -76,12 +76,12 @@ $container['mq'] = function ($c) {
     return $channel;
 };
 
-require __DIR__ . '/../src/routes/web.php';
+require __DIR__ . '/../src/routes/web/broadcast.php';
+require __DIR__ . '/../src/routes/web/landing.php';
+require __DIR__ . '/../src/routes/web/user.php';
 
-require __DIR__ . '/../src/routes/account.php';
-
-require __DIR__ . '/../src/routes/api.php';
-
-require __DIR__ . '/../src/routes/backend.php';
+require __DIR__ . '/../src/routes/api/backend.php';
+require __DIR__ . '/../src/routes/api/broadcast.php';
+require __DIR__ . '/../src/routes/api/user.php';
 
 $app->run();

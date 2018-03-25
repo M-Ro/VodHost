@@ -2,43 +2,8 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use \VodHost\EntityMapper;
-use \VodHost\Authentication;
-
-$app->get('/', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
-
-    $response = $this->view->render(
-        $response,
-        'index.phtml',
-        ['loggedIn' => $loggedIn, 'username' => $username, 'content_url' => $this->get('content_url_root')]
-    );
-
-    return $response;
-});
-
-$app->get('/login', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    if ($loggedIn == true) {
-        $response = $response->withRedirect("/");
-        return $response;
-    }
-
-    $response = $this->view->render($response, 'login.phtml', ['loggedIn' => $loggedIn]);
-    return $response;
-});
-
-$app->get('/register', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    if ($loggedIn == true) {
-        $response = $response->withRedirect("/");
-        return $response;
-    }
-
-    $response = $this->view->render($response, 'register.phtml', ['loggedIn' => $loggedIn]);
-    return $response;
-});
+use VodHost\EntityMapper;
+use VodHost\Authentication;
 
 $app->get('/upload', function (Request $request, Response $response, array $args) {
     $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);

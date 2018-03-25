@@ -24,7 +24,7 @@ app.controller('loginCtrl', function($scope, $http, $window) {
         	"password":$scope.password
         };
 
-        var url = '/api/signin';
+        var url = '/api/user/signin';
 
         $http.post(url, data, { withCredentials: true }).then(function(msg) {
         	if(msg.data['state'] == 'error')

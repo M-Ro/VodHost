@@ -2,6 +2,7 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+
 use \VodHost\Authentication\BackendAuthentication as BackendAuthentication;
 
 use \VodHost\EntityMapper;
@@ -14,7 +15,7 @@ use \VodHost\Entity;
  * @return json array containing broadcast id, md5sum, unprocessed file name for fetching
  *
  */
-$app->get('/api/backend/retrieve/{id}', function (Request $request, Response $response, array $args) {
+$app->get('/api/backend/broadcast/retrieve/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
 
     if (!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
@@ -65,7 +66,7 @@ $app->get('/api/backend/retrieve/{id}', function (Request $request, Response $re
  * @return HTTP 200 on success, HTTP 4xx on error.
  *
  */
-$app->get('/api/backend/tagprocessed/{id}', function (Request $request, Response $response, array $args) {
+$app->get('/api/backend/broadcast/tagprocessed/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
 
     if (!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {

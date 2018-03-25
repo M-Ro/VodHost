@@ -7,7 +7,7 @@ use VodHost\EntityMapper;
 use VodHost\Authentication;
 use VodHost\Task;
 
-$app->post('/api/upload', function (Request $request, Response $response, array $args) {
+$app->post('/api/broadcast/upload', function (Request $request, Response $response, array $args) {
     $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
     $username = Authentication\UserSessionHandler::getUsername($request);
     if (!$loggedIn) {
@@ -28,9 +28,8 @@ $app->post('/api/upload', function (Request $request, Response $response, array 
 /** Return a json response containing all recent broadcasts to the client.
  *
  */
-// FIXME: This needs to return recentvideos, currently returns all videos
 // FIXME just convert this all to string array instead of modifying the entity object
-$app->get('/api/fetch/recentvideos', function (Request $request, Response $response, array $args) {
+$app->get('/api/broadcast/fetchrecent', function (Request $request, Response $response, array $args) {
     $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $umapper = new EntityMapper\UserMapper($this->em);
 
@@ -45,42 +44,6 @@ $app->get('/api/fetch/recentvideos', function (Request $request, Response $respo
     }
 
     $message = json_encode($broadcasts);
-
-    return $response->withJson($message, 200);
-});
-
-$app->get('/api/account/getinfo', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
-    if (!$loggedIn) {
-        return $response->withStatus(403);
-    }
-
-    $umapper = new EntityMapper\UserMapper($this->em);
-    $user = $umapper->getUserByUsername($username);
-
-    if (!$user) {
-        return $response->withStatus(403);
-    }
-
-    // User account information
-    $user_data = [
-        'username' => $user->getUsername(),
-        'email' => $user->getEmail(),
-        'activated' => $user->getActivated(),
-        'dateRegistered' => $user->getDateRegistered()->format('Y-m-d')
-    ];
-
-    // User uploaded video information
-    $bmapper = new EntityMapper\BroadcastMapper($this->em);
-    $broadcasts = $bmapper->getBroadcastsByUserId($user->getId());
-
-    $arr = [
-        'user' => $user_data,
-        'broadcasts' => $broadcasts
-    ];
-
-    $message = json_encode($arr);
 
     return $response->withJson($message, 200);
 });
