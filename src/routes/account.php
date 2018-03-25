@@ -89,25 +89,32 @@ $app->post('/api/signin', function (Request $request, Response $response, array 
             return $response->withJson($message, 200);
         }
 
-        if (password_verify($user_data['password'], $user->getPassword())) {
-            $response = Authentication\UserSessionHandler::login($response, $user);
-
-            $message = [
-                'state' => 'success',
-                'message' => ''
-            ];
-
-            $response = $response->withJson($message, 200);
-        } else {
+        if (!password_verify($user_data['password'], $user->getPassword())) {
             $message = [
                 'state' => 'error',
                 'message' => 'Incorrect password'
             ];
 
-            $response = $response->withJson($message, 200);
+            return $response->withJson($message, 200);
         }
 
-        return $response;
+        if (!$user->getActivated()) {
+            $message = [
+                'state' => 'error',
+                'message' => 'Account has not yet been activated'
+            ];
+
+            return $response->withJson($message, 200);
+        }
+
+        $response = Authentication\UserSessionHandler::login($response, $user);
+
+        $message = [
+            'state' => 'success',
+            'message' => ''
+        ];
+
+        return $response->withJson($message, 200);
 });
 
 $app->get('/account', function (Request $request, Response $response, array $args) {
@@ -122,3 +129,29 @@ $app->get('/account', function (Request $request, Response $response, array $arg
 
     return $response;
 });
+
+$app->get('/user/activate/{hash}', function (Request $request, Response $response, array $args) {
+    $hash = $args['hash'];
+    if(!$hash) {
+        $response->withStatus(400);
+    }
+
+    $umapper = new EntityMapper\UserMapper($this->em);
+    $user = $umapper->findUserByActivationHash($hash);
+
+    $validCode = false;
+
+    if ($user) {
+        $validCode = true;
+
+        $user->setActivated(true);
+        $umapper->update($user);
+    }
+
+    return $this->view->render(
+        $response,
+        'account_validated.phtml',
+        ['validCode' => $validCode, 'loggedIn' => false, 'content_url' => $this->get('content_url_root')]
+    );
+});
+

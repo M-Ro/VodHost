@@ -80,6 +80,13 @@ td, th {
     width: 50%;
 }
 
+.centerdivtext
+{
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
 .pure-img-responsive {
     max-width: 100%;
     height: auto;

@@ -31,7 +31,7 @@ class UserMapper extends Mapper
     /**
      * Get user by Email
      *
-     * @param str $user_email The email address of the user
+     * @param string $user_email The email address of the user
      * @return UserEntity  The User
      */
     public function getUserByEmail($user_email)
@@ -43,12 +43,24 @@ class UserMapper extends Mapper
     /**
      * Get user by Username
      *
-     * @param str $user_name The username of the user
+     * @param string $user_name The username of the user
      * @return UserEntity  The User
      */
     public function getUserByUsername($user_name)
     {
         $result = $this->em->getRepository(UserEntity::class)->findOneBy(['username' => $user_name]);
+        return $result;
+    }
+
+    /**
+     * Find a user with an activation hash matching this one
+     *
+     * @param string $hash activation code
+     * @return UserEntity  The User
+     */
+    public function findUserByActivationHash($hash)
+    {
+        $result = $this->em->getRepository(UserEntity::class)->findOneBy(['hash' => $hash]);
         return $result;
     }
 
@@ -68,6 +80,17 @@ class UserMapper extends Mapper
             $user = $this->em->merge($user);
             $this->em->flush();
         }
+    }
+
+    /**
+     * Update a UserEntity with new object properties
+     *
+     * @param UserEntity $user The UserEntity object
+     */
+    public function update(UserEntity $user)
+    {
+        $this->em->merge($user);
+        $this->em->flush();
     }
 
     /**

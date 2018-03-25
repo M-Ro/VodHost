@@ -79,7 +79,7 @@ class UserEntity
         $this->email = $data['email'];
         $this->password = $data['password'];
         $this->admin = false;
-        $this->activated = true;
+        $this->activated = false;
         $this->hash = bin2hex(random_bytes(16));
         $this->date_registered = new \DateTime("now");
     }
@@ -132,5 +132,10 @@ class UserEntity
     public function setAdmin($val)
     {
         $this->admin = $val;
+    }
+
+    public function setActivated($val)
+    {
+        $this->activated = $val;
     }
 }
