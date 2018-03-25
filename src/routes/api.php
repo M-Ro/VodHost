@@ -2,11 +2,10 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use PhpAmqpLib\Message\AMQPMessage;
-
 use VodHost\Entity;
 use VodHost\EntityMapper;
 use VodHost\Authentication;
+use VodHost\Task;
 
 $app->post('/api/upload', function (Request $request, Response $response, array $args) {
     $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
@@ -191,16 +190,8 @@ $app->post('/api/broadcast/remove', function (Request $request, Response $respon
     }
 
     /* Create a job to purge assets for this video */
-    $task_data = [
-        'id' => $broadcast_id
-    ];
-
-    $msg = new AMQPMessage(
-        json_encode($task_data),
-        array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT)
-    );
-
-    $this->mq->basic_publish($msg, '', 'purge_broadcast');
+    $task = new Task\PurgeBroadcastTask($this->mq, $broadcast_id);
+    $task->publish();
 
     // Delete the broadcast
     $bmapper->delete($broadcast);

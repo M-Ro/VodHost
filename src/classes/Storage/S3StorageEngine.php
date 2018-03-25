@@ -118,6 +118,37 @@ class S3StorageEngine extends StorageEngine
 
     public function get($remote_path)
     {
-        throw new \Exception("Stub");
+        throw new \Exception("Not Implemented");
+    }
+
+    public function listDirectory($remote_path)
+    {
+        $result = $this->s3->listObjectsV2([
+            'Bucket' => 'vodhost',
+            'Prefix' => $remote_path,
+        ]);
+
+        $keys = array();
+
+        if($result['Contents']) {
+            foreach ($result['Contents'] as $object) {
+                $keys[] = $object['Key'];
+            }
+        }
+
+        return $keys;
+    }
+
+    public function delete($remote_path)
+    {
+        $result = $this->s3->deleteObject([
+            'Bucket' => 'vodhost',
+            'Key' => $remote_path,
+        ]);
+    }
+
+    public function exists($remote_path)
+    {
+        throw new \Exception("Not Implemented");
     }
 }
