@@ -14,6 +14,23 @@ class BroadcastMapper extends Mapper
         return $records;
     }
 
+    /** Return the recent broadcasts that are public
+     *
+     *  @param $limit - Maximum number of results to return
+     *  @return array[BroadcastEntity] Array of Broadcasts
+     */
+    public function getRecentBroadcasts(int $limit = 30)
+    {
+        $result = $this->em->getRepository(BroadcastEntity::class)->findBy(
+          ['visibility' => true],
+          ['upload_date' => 'DESC'],
+          $limit,
+          null // offset
+        );
+
+        return $result;
+    }
+
     /**
      * Get broadcast by ID
      *

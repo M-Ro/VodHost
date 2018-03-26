@@ -20,25 +20,30 @@ $app->post('/api/broadcast/upload', function (Request $request, Response $respon
     return $uploadHandler->handleChunk($request, $response);
 })->add(new UserAuthentication(UserAuthentication::Forbidden));
 
-/** Return a json response containing all recent broadcasts to the client.
- *
+/**
+ *  Return a json response containing all recent broadcasts to the client.
  */
-// FIXME just convert this all to string array instead of modifying the entity object
 $app->get('/api/broadcast/fetchrecent', function (Request $request, Response $response, array $args) {
     $bmapper = new EntityMapper\BroadcastMapper($this->em);
     $umapper = new EntityMapper\UserMapper($this->em);
 
-    $broadcasts = $bmapper->getBroadcasts();
+    $broadcasts = $bmapper->getRecentBroadcasts();
+    $broadcasts_arr = array();
+
     foreach ($broadcasts as $b) {
+        $item = (array)$b->jsonSerialize();
+
         $u = $umapper->getUserById($b->getUserId());
         if ($u) {
-            $b->uploader = $u->getUsername();
+            $item['uploader'] = $u->getUsername();
         } else {
-            $b->uploader = '[Deleted]';
+            $item['uploader'] = '[Deleted]';
         }
+
+        $broadcasts_arr[] = $item;
     }
 
-    $message = json_encode($broadcasts);
+    $message = json_encode($broadcasts_arr);
 
     return $response->withJson($message, 200);
 });
@@ -54,7 +59,7 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
     $broadcast_description = filter_var($data['description'], FILTER_SANITIZE_STRING);
     $broadcast_visibility = filter_var($data['visibility'], FILTER_SANITIZE_STRING);
 
-    if (!isset($broadcast_id) || !isset($broadcast_title) || 
+    if (!isset($broadcast_id) || !isset($broadcast_title) ||
         !isset($broadcast_description) || !isset($broadcast_visibility)) {
         $this->logger->warning("/api/broadcast/editdetails invalid postdata provided" . PHP_EOL);
         return $response->withStatus(400);

@@ -74,12 +74,6 @@ class BroadcastEntity implements \JsonSerializable
     protected $upload_date;
 
     /**
-     * @var string
-     * Set by the API when sending broadcasts to client. Not a db field
-     */
-    public $uploader;
-
-    /**
      * Construct class from data array
      * @param array $data The data to use to create
      */
