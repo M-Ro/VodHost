@@ -119,7 +119,7 @@ class UploadHandler
         }
 
         $bmapper = new EntityMapper\BroadcastMapper($this->em);
-        
+
         // Convert 'public' 'private' visibility to bool true/false
         $vis = false;
         if ($mediainfo['vis'] == 'Public') {
@@ -128,7 +128,6 @@ class UploadHandler
 
         /* Create a broadcast entity */
         $broadcast_data = [
-            'id' => $bmapper->generateUniqueID(),
             'user_id' => $uid,
             'title' => $mediainfo['title'],
             'filename' => $mediainfo['filename'],

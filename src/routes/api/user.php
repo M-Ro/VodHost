@@ -5,6 +5,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 use \VodHost\Entity;
 use \VodHost\EntityMapper;
 use \VodHost\Authentication;
+use \VodHost\Task;
 
 use VodHost\Middleware\Authentication\UserAuthentication as UserAuthentication;
 

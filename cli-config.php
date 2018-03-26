@@ -4,7 +4,7 @@ use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 require 'vendor/autoload.php';
 
-include 'src/settings.php';
+include 'settings.php';
 
 $doctrine_conf = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
     ['src/classes/Entity'],

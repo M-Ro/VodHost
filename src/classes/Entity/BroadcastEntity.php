@@ -16,6 +16,8 @@ class BroadcastEntity implements \JsonSerializable
      * @var string
      * @ORM\Column(name="id", type="string")
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="VodHost\Entity\BroadcastIdGenerator")
      */
     protected $id;
 
