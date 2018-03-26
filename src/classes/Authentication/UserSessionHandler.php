@@ -90,6 +90,8 @@ class UserSessionHandler
         $admin = FigRequestCookies::get($request, 'admin');
         if ($admin) {
             return $admin->getValue();
+        } else {
+            return false;
         }
     }
 }

@@ -3,31 +3,23 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 use VodHost\Authentication;
+use VodHost\Middleware\Authentication\UserAuthentication as UserAuthentication;
 
 $app->get('/user/login', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    if ($loggedIn == true) {
-        $response = $response->withRedirect("/");
-        return $response;
-    }
+    $user = $request->getAttribute('user');
 
-    $response = $this->view->render($response, 'login.phtml', ['loggedIn' => $loggedIn]);
+    $response = $this->view->render($response, 'login.phtml', ['loggedIn' => $user['logged_in']]);
     return $response;
-});
+})->add(new UserAuthentication(UserAuthentication::RedirectOnPass));
 
 $app->get('/user/register', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    if ($loggedIn == true) {
-        $response = $response->withRedirect("/");
-        return $response;
-    }
+    $user = $request->getAttribute('user');
 
-    $response = $this->view->render($response, 'register.phtml', ['loggedIn' => $loggedIn]);
+    $response = $this->view->render($response, 'register.phtml', ['loggedIn' => $user['logged_in']]);
     return $response;
-});
+})->add(new UserAuthentication(UserAuthentication::RedirectOnPass));
 
 $app->get('/logout', function (Request $request, Response $response, array $args) {
-
         $response = $response->withRedirect("/");
         $response = Authentication\UserSessionHandler::purge($response);
 
@@ -35,21 +27,16 @@ $app->get('/logout', function (Request $request, Response $response, array $args
 });
 
 $app->get('/user/account', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
-
-    if ($loggedIn == false) {
-        //return $response->withRedirect("/");
-    }
+    $user = $request->getAttribute('user');
 
     $response = $this->view->render(
         $response,
         'account.phtml',
-        ['loggedIn' => $loggedIn, 'username' => $username, 'content_url' => $this->get('content_url_root')]
+        ['loggedIn' => $user['logged_in'], 'username' => $user['username'], 'content_url' => $this->get('content_url_root')]
     );
 
     return $response;
-});
+})->add(new UserAuthentication(UserAuthentication::RedirectOnFail));
 
 $app->get('/user/activate/{hash}', function (Request $request, Response $response, array $args) {
     $hash = $args['hash'];

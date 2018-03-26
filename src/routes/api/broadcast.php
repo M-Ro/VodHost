@@ -6,14 +6,9 @@ use VodHost\Entity;
 use VodHost\EntityMapper;
 use VodHost\Authentication;
 use VodHost\Task;
+use VodHost\Middleware\Authentication\UserAuthentication as UserAuthentication;
 
 $app->post('/api/broadcast/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
-    if (!$loggedIn) {
-        return $response->withStatus(403);
-    }
-
     $uploadHandler = new \VodHost\UploadHandler(
         $this->get('upload_directory'),
         $this->get('temp_directory'),
@@ -23,7 +18,7 @@ $app->post('/api/broadcast/upload', function (Request $request, Response $respon
     );
 
     return $uploadHandler->handleChunk($request, $response);
-});
+})->add(new UserAuthentication(UserAuthentication::Forbidden));
 
 /** Return a json response containing all recent broadcasts to the client.
  *
@@ -51,9 +46,6 @@ $app->get('/api/broadcast/fetchrecent', function (Request $request, Response $re
 $app->post('/api/broadcast/editdetails', function (Request $request, Response $response, array $args) {
     $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
     $username = Authentication\UserSessionHandler::getUsername($request);
-    if (!$loggedIn) {
-        return $response->withStatus(403);
-    }
 
     /* Validate post data */
     $data = $request->getParsedBody();
@@ -111,7 +103,7 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
         (Description: $broadcast_description) (Vis: $broadcast_visibility)" . PHP_EOL);
 
     return $response->withStatus(200);
-});
+})->add(new UserAuthentication(UserAuthentication::Forbidden));
 
 $app->post('/api/broadcast/remove', function (Request $request, Response $response, array $args) {
     $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
@@ -163,4 +155,4 @@ $app->post('/api/broadcast/remove', function (Request $request, Response $respon
     $this->logger->debug("Removed broadcast $broadcast_id" . PHP_EOL);
 
     return $response->withStatus(200);
-});
+})->add(new UserAuthentication(UserAuthentication::Forbidden));

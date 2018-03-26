@@ -3,7 +3,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 
-use \VodHost\Authentication\BackendAuthentication as BackendAuthentication;
+use \VodHost\Middleware\Authentication;
 
 use \VodHost\EntityMapper;
 use \VodHost\Entity;
@@ -18,11 +18,6 @@ use \VodHost\Entity;
 $app->get('/api/backend/broadcast/retrieve/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
 
-    if (!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
-        $this->logger->warning('backend/retrieve/ accessed with invalid api key' . PHP_EOL);
-        return $response->withStatus(403);
-    }
-    
     if (!$id) {
         $this->logger->warning('backend/retrieve/ called without valid id' . PHP_EOL);
         return $response->withStatus(400);
@@ -55,7 +50,7 @@ $app->get('/api/backend/broadcast/retrieve/{id}', function (Request $request, Re
     ];
 
     return $response->withJson($response_data, 200);
-});
+})->add(new Authentication\BackendAuthentication($app->getContainer()));
 
 
 /**
@@ -68,11 +63,6 @@ $app->get('/api/backend/broadcast/retrieve/{id}', function (Request $request, Re
  */
 $app->get('/api/backend/broadcast/tagprocessed/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
-
-    if (!BackendAuthentication::authenticateAPIKey($request, $this->get('api_key'))) {
-        $this->logger->warning('backend/tagprocessed/ accessed with invalid api key' . PHP_EOL);
-        return $response->withStatus(403);
-    }
 
     if (!$id) {
         $this->logger->warning('backend/tagprocessed/ called without valid id' . PHP_EOL);
@@ -100,4 +90,4 @@ $app->get('/api/backend/broadcast/tagprocessed/{id}', function (Request $request
     $bmapper->update($broadcast);
 
     return $response->withStatus(200);
-});
+})->add(new Authentication\BackendAuthentication($app->getContainer()));

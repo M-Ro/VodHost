@@ -3,28 +3,29 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 use VodHost\EntityMapper;
-use VodHost\Authentication;
+
+use VodHost\Middleware\Authentication\UserAuthentication as UserAuthentication;
 
 $app->get('/upload', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
-    if (!$loggedIn) {
-        $response = $response->withRedirect("/");
-        return $response;
-    }
+    $user = $request->getAttribute('user');
 
-    $response = $this->view->render($response, 'upload.phtml', ['loggedIn' => $loggedIn, 'username' => $username]);
+    $response = $this->view->render(
+        $response,
+        'upload.phtml',
+        ['loggedIn' => $user['logged_in'], 'username' => $user['username']]
+    );
+
     return $response;
-});
+})->add(new UserAuthentication(UserAuthentication::RedirectOnFail));
 
 $app->get('/view/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
+
+    $user = $request->getAttribute('user');
 
     $response_vars = [
-        'loggedIn' => $loggedIn,
-        'username' => $username
+        'loggedIn' => $user['logged_in'],
+        'username' => $user['username']
     ];
 
     $bmapper = new EntityMapper\BroadcastMapper($this->em);
@@ -51,4 +52,4 @@ $app->get('/view/{id}', function (Request $request, Response $response, array $a
     $response = $this->view->render($response, 'view.phtml', $response_vars);
 
     return $response;
-});
+})->add(new UserAuthentication(UserAuthentication::Passive));

@@ -6,6 +6,8 @@ use \VodHost\Entity;
 use \VodHost\EntityMapper;
 use \VodHost\Authentication;
 
+use VodHost\Middleware\Authentication\UserAuthentication as UserAuthentication;
+
 $app->post(
     '/api/user/signup',
     function (Request $request, Response $response, array $args) {
@@ -108,14 +110,10 @@ $app->post('/api/user/signin', function (Request $request, Response $response, a
 });
 
 $app->get('/api/user/getinfo', function (Request $request, Response $response, array $args) {
-    $loggedIn = Authentication\UserSessionHandler::isLoggedIn($request);
-    $username = Authentication\UserSessionHandler::getUsername($request);
-    if (!$loggedIn) {
-        return $response->withStatus(403);
-    }
+    $user = $request->getAttribute('user');
 
     $umapper = new EntityMapper\UserMapper($this->em);
-    $user = $umapper->getUserByUsername($username);
+    $user = $umapper->getUserByUsername($user['username']);
 
     if (!$user) {
         return $response->withStatus(403);
@@ -141,4 +139,4 @@ $app->get('/api/user/getinfo', function (Request $request, Response $response, a
     $message = json_encode($arr);
 
     return $response->withJson($message, 200);
-});
+})->add(new UserAuthentication(UserAuthentication::Forbidden));

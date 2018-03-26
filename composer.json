@@ -25,7 +25,8 @@
     },
     "autoload": {
         "psr-4": {
-            "VodHost\\": "src/classes/"
+            "VodHost\\": "src/classes/",
+            "VodHost\\Middleware\\": "src/middleware/"
         }
     }
 }
