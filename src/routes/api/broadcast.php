@@ -94,9 +94,9 @@ $app->post('/api/broadcast/editdetails', function (Request $request, Response $r
     $broadcast->setDescription($broadcast_description);
 
     // Translate 'Visibility' from 'Public / Private' to True / False
-    $vis = false;
+    $vis = 0;
     if ($broadcast_visibility == 'Public') {
-        $vis = true;
+        $vis = 1;
     }
 
     $broadcast->setVisibility($vis);
