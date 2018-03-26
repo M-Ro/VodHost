@@ -52,6 +52,12 @@ class BroadcastEntity implements \JsonSerializable
     protected $filename;
 
     /**
+     * @var int
+     * @ORM\Column(name="filesize", type="integer")
+     */
+    protected $filesize = 0;
+
+    /**
      * @var float
      * @ORM\Column(name="length", type="float")
      */
@@ -179,5 +185,15 @@ class BroadcastEntity implements \JsonSerializable
     public function setVisibility(string $vis)
     {
         $this->visibility = $vis;
+    }
+
+    public function setFilesize(string $size)
+    {
+        $this->filesize = $size;
+    }
+
+    public function setLength(string $length)
+    {
+        $this->length = $length;
     }
 }

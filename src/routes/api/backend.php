@@ -61,11 +61,11 @@ $app->get('/api/backend/broadcast/retrieve/{id}', function (Request $request, Re
  * @return HTTP 200 on success, HTTP 4xx on error.
  *
  */
-$app->get('/api/backend/broadcast/tagprocessed/{id}', function (Request $request, Response $response, array $args) {
+$app->get('/api/backend/broadcast/removesource/{id}', function (Request $request, Response $response, array $args) {
     $id = $args['id'];
 
     if (!$id) {
-        $this->logger->warning('backend/tagprocessed/ called without valid id' . PHP_EOL);
+        $this->logger->warning('backend/removesource/ called without valid id' . PHP_EOL);
         return $response->withStatus(400);
     }
 
@@ -74,7 +74,7 @@ $app->get('/api/backend/broadcast/tagprocessed/{id}', function (Request $request
     $broadcast = $bmapper->getBroadcastById($id);
 
     if (!$broadcast) {
-        $this->logger->warning('backend/tagprocessed/ could not fetch broadcast at id ' . $id . PHP_EOL);
+        $this->logger->warning('backend/removesource/ could not fetch broadcast at id ' . $id . PHP_EOL);
         return $response->withStatus(400);
     }
 
@@ -85,9 +85,44 @@ $app->get('/api/backend/broadcast/tagprocessed/{id}', function (Request $request
         unlink($path);
     }
 
-    /* Set the broadcast state to processed */
-    $broadcast->setState('processed');
-    $bmapper->update($broadcast);
-
     return $response->withStatus(200);
+})->add(new Authentication\BackendAuthentication($app->getContainer()));
+
+/**
+ * Modifies entity fields based on information provided by the Backend
+ * Useful for setting broadcast fields (video length, filesize) that are only
+ * available after processing.
+ *
+ * @param {id} id of the broadcast
+ * @return HTTP 200 on success, HTTP 4xx on error.
+ *
+ */
+$app->post('/api/backend/broadcast/modify/{id}', function (Request $request, Response $response, array $args) {
+    $id = $args['id'];
+
+    if (!$id) {
+        $this->logger->warning('backend/broadcast/modify/ called without valid id' . PHP_EOL);
+        return $response->withStatus(400);
+    }
+
+    $bmapper = new EntityMapper\BroadcastMapper($this->em);
+    $broadcast = $bmapper->getBroadcastById($id);
+
+    $data = json_decode($request->getBody(), true);
+    if ($data && $broadcast) {
+        foreach ($data as $key => $val) {
+            switch ($key) {
+                case "state": $broadcast->setState($val); break;
+                case "filesize": $broadcast->setFilesize($val); break;
+                case "length": $broadcast->setLength($val); break;
+            }
+        }
+
+        $bmapper->update($broadcast);
+        $response = $response->withStatus(200);
+    } else {
+        $response = $response->withStatus(400);
+    }
+
+    return $response;
 })->add(new Authentication\BackendAuthentication($app->getContainer()));

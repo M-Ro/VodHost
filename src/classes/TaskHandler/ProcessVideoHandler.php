@@ -101,11 +101,21 @@ class ProcessVideoHandler extends TaskHandler
             /* Upload the processed content */
             $this->pushToStorage($v_setup, $data['broadcastid']);
 
+            /* Inform the frontend application the video is processed */
+            $this->api->removeSource($data['broadcastid']);
+
+            $outputfilepath = $v_setup['target'] . $v_setup['output_filename'];
+
+            $broadcast_metadata = [
+                'state' => 'processed',
+                'length' => $vprocessor->getVideoLength($outputfilepath),
+                'filesize' => filesize($outputfilepath)
+            ];
+
+            $this->api->modifyBroadcast($data['broadcastid'], json_encode($broadcast_metadata));
+
             /* Cleanup local files we created */
             $this->cleanupWorkspace($v_setup['target'], $path);
-
-            /* Inform the frontend application the video is processed */
-            $this->api->tagBroadcastAsProcessed($data['broadcastid']);
         };
 
         // Inform AMQP which job queue we consume from

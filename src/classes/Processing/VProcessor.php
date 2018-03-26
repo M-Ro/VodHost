@@ -15,7 +15,7 @@ class VProcessor
     private $filepath;
 
     private $video;
- 
+
     /**
      * Handles initialization of the class - creates an FFMpeg decoder instance and
      * loads the specified video file.
@@ -88,7 +88,7 @@ class VProcessor
         } catch (Exception $e) {
             throw $e;
         }
-        
+
         /* Divide length of stream evenly by number of thumbnails we wish to create */
         if (!isset($settings['thumbcount'])) {
             throw new \Exception(__METHOD__ . ':thumbcount not provided');
@@ -134,6 +134,17 @@ class VProcessor
         $format->setAdditionalParameters(array('-vcodec', 'copy', '-acodec', 'copy', '-movflags', 'faststart'));
 
         $this->video->save($format, $settings['target'] . $settings['output_filename']);
+    }
+
+    /**
+     * Returns the length of a stream via ffprobe
+     *
+     * @param  string $filepath - path of mp4
+     */
+    public function getVideoLength(string $filepath)
+    {
+        $ffprobe = \FFMpeg\FFProbe::create();
+        return $ffprobe->streams($filepath)->videos()->first()->get('duration');
     }
 
     /**

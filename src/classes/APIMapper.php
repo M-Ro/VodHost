@@ -16,14 +16,14 @@ class APIMapper
     /* API Functions Below */
 
     /**
-     * Calls /api/backend/tagProcessed/$id to inform the frontend that a broadcast
+     * Calls /api/backend/broadcast/removeSource/$id to inform the frontend that a broadcast
      * has finalized processing.
      *
      * @param string $id - Broadcast ID
      */
-    public function tagBroadcastAsProcessed(string $id)
+    public function removeSource(string $id)
     {
-        $api_endpoint = '/api/backend/tagprocessed/';
+        $api_endpoint = '/api/backend/broadcast/removesource/';
         $url = $this->base_url . $api_endpoint . $id;
 
         $curl = curl_init();
@@ -47,7 +47,7 @@ class APIMapper
      */
     public function getBroadcastInfo(string $id)
     {
-        $api_endpoint = '/api/backend/retrieve/';
+        $api_endpoint = '/api/backend/broadcast/retrieve/';
         $url = $this->base_url . $api_endpoint . $id;
 
         $curl = curl_init();
@@ -55,6 +55,35 @@ class APIMapper
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => array('X-API-KEY: ' . $this->api_key)
+        ));
+
+        $result = curl_exec($curl);
+        curl_close($curl);
+
+        return $result;
+    }
+
+    /**
+     * Calls /api/broadcast/modify
+     *
+     * @param string $id - Broadcast ID
+     * @param string $json json encoded data
+     */
+    public function modifyBroadcast(string $id, string $json)
+    {
+        $api_endpoint = '/api/backend/broadcast/modify/';
+        $url = $this->base_url . $api_endpoint . $id;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url,
+            CURLOPT_HTTPHEADER => array(
+                                    'X-API-KEY: ' . $this->api_key,
+                                    'Content-Type: application/json'),
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $json,
+            CURLOPT_RETURNTRANSFER => true
         ));
 
         $result = curl_exec($curl);
