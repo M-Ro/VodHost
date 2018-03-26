@@ -121,9 +121,9 @@ class UploadHandler
         $bmapper = new EntityMapper\BroadcastMapper($this->em);
 
         // Convert 'public' 'private' visibility to bool true/false
-        $vis = false;
-        if ($mediainfo['vis'] == 'Public') {
-            $vis = true;
+        $vis = 0;
+        if (strtolower($mediainfo['vis']) == 'public') {
+            $vis = 1;
         }
 
         /* Create a broadcast entity */
