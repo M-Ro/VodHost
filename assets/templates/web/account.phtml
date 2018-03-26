@@ -3,7 +3,7 @@
 <head>
 	<title>Video-on-Demand Host</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" 
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
 		integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 
 	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
@@ -122,6 +122,23 @@ app.controller('accountCtrl', function($scope, $http, $window, $parse) {
 			$scope.cancelEdit(); // Close the pane
 		});
 	}
+
+	$scope.getThumbSrc = function(video) {
+		if(!video) {
+			return null;
+		}
+		
+		if(video.state == 'processing') {
+			return '/static/img/processing_thumb.png';
+		} else {
+			if(video.thumb) {
+				console.log('returning ' + video.thumb);
+				return video.thumb;
+			} else {
+				return $scope.contenturl + '/thumb/' + video.id + '/thumb_2.jpg';
+			}
+		}
+	}
 });
 </script>
 
@@ -129,7 +146,7 @@ app.controller('accountCtrl', function($scope, $http, $window, $parse) {
 <div class="editpanel" ng-show="editDarkOverlay">
 
 	<div class="editpanel-left">
-		<img height="115px" ng-src="{{contenturl + '/thumb/' + editvideo.id + '/thumb_2.jpg'}}"></img>
+		<img height="115px" ng-src="{{getThumbSrc(editvideo)}}"></img>
 		<p>{{editvideo.upload_date}}</p>
 		<p>Length: {{editvideo.length}}</p>
 		<p>{{editvideo.filesize}}MB</p>
@@ -213,7 +230,7 @@ app.controller('accountCtrl', function($scope, $http, $window, $parse) {
             <h2 class="content-subhead">Broadcasts</h2>
 
             	<div class="videogrid" ng-repeat="video in broadcasts">
-            		<a href="/view/{{video.id}}"><img height="90px" class="videothumb" ng-src="{{contenturl + '/thumb/' + video.id + '/thumb_2.jpg'}}"></img></a>
+            		<a href="/view/{{video.id}}"><img height="90px" class="videothumb" ng-src="{{getThumbSrc(video)}}"></img></a>
             		<div class="videostats">
             			<p>Views: {{video.views}}</p>
             			<p>Uploaded: {{video.upload_date}}</p>

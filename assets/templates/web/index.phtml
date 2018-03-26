@@ -3,7 +3,7 @@
 <head>
 	<title>Video-on-Demand Host</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" 
+	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
 		integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 
 	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
@@ -67,6 +67,22 @@
         	video.thumb = ($scope.contenturl + '/thumb/' + video.id + '/thumb_0.jpg')
         	$interval.cancel(animateThumbFunc);
         }
+
+		$scope.getThumbSrc = function(video) {
+			if(!video) {
+				return;
+			}
+
+			if(video.state == 'processing') {
+				return '/static/img/processing_thumb.png';
+			} else {
+				if(video.thumb) {
+					return video.thumb;
+				} else {
+					return $scope.contenturl + '/thumb/' + video.id + '/thumb_0.jpg';
+				}
+			}
+		}
 	});
 </script>
 
@@ -82,7 +98,7 @@
 		<ul>
 			<li ng-repeat="video in broadcasts">
 				<div class="videocard" ng-mouseenter="startAnimateThumb(video)" ng-mouseleave="stopAnimateThumb(video)">
-						<a href="/view/{{video.id}}"><img ng-src="{{video.thumb || contenturl + '/thumb/' + video.id + '/thumb_0.jpg'}}"></img>
+						<a href="/view/{{video.id}}"><img ng-src="{{getThumbSrc(video)}}"></img>
 						<h4>{{video.title}}</h4></a>
 						<h7>Uploaded by: <strong>{{video.uploader}}</strong></h7><br />
 						<h7>{{video.views}} views &#8226; {{video.upload_date}}</h7>
