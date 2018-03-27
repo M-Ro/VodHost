@@ -9,12 +9,15 @@ use VodHost\Task;
 use VodHost\Middleware\Authentication\UserAuthentication as UserAuthentication;
 
 $app->post('/api/broadcast/upload', function (Request $request, Response $response, array $args) {
+    global $config;
+
     $uploadHandler = new \VodHost\UploadHandler(
         $this->get('upload_directory'),
         $this->get('temp_directory'),
         $this->logger,
         $this->em,
-        $this->mq
+        $this->mq,
+        $config['storage']
     );
 
     return $uploadHandler->handleChunk($request, $response);

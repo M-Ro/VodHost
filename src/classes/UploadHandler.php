@@ -11,6 +11,9 @@ class UploadHandler
     protected $em;
     protected $mq;
 
+    // @var StorageEngine
+    protected $storage;
+
     /**
      * Construct class from data array
      * @param $uploaddir - Target directory for uploads
@@ -18,14 +21,19 @@ class UploadHandler
      * @param $logger - Reference to monologger.
      * @param $em - Reference to entity mapper
      * @param $mq - Reference to message/job queue
+     * @param $mq - Reference to message/job queue
      */
-    public function __construct($uploaddir, $chunkdir, $logger, $em, $mq)
+    public function __construct($uploaddir, $chunkdir, $logger, $em, $mq, $storage_settings)
     {
         $this->dir_upload = $uploaddir;
         $this->dir_chunks = $chunkdir;
         $this->logger = $logger;
         $this->em = $em;
         $this->mq = $mq;
+
+        $this->storage = Storage\StorageEngine::BuildStorageEngine(
+            $storage_settings, $logger
+        );
     }
 
     /**
@@ -79,6 +87,13 @@ class UploadHandler
                 'filename' => $file['name']
             ];
             $broadcast = $this->createBroadcast($request, $mediainfo);
+
+            /* Push the file to S3 working storage */
+            $remotepath = 'temp/' . $broadcast->getId() . '/' . $file['name'];
+            $this->storage->put($dest, $remotepath);
+
+            // Delete local file
+            unlink($dest);
 
             // Create a work task to process this upload
             $this->createTask($broadcast);

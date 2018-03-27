@@ -51,23 +51,19 @@ class ProcessVideoHandler extends TaskHandler
 
             /* Fetch the file from the processing queue using curl */
 
-            $url = $this->config['server_domain'] . '/uploads/processing/' . $broadcast_details['filename'];
-            $path = $broadcast_details['filename'];
+            $file_loc = 'temp/' . $id . '/' . $broadcast_details['filename'];
+            $dest = $broadcast_details['filename'];
 
-            $fp = fopen($path, 'w+');
-            $curl_handle = curl_init(str_replace(" ", "%20", $url));
-            curl_setopt($curl_handle, CURLOPT_FILE, $fp);
-            curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
-            $ret = curl_exec($curl_handle);
-            curl_close($curl_handle);
-            fclose($fp);
+            $ret = $this->storage->get($file_loc, $dest);
 
             if (!$ret) {
-                $this->log->error("Could not fetch video for processing: " . $url . PHP_EOL);
+                $this->log->error("Could not fetch video for processing: " . $file_loc . PHP_EOL);
                 return;
             }
 
-            $vprocessor = new Processing\VProcessor($path);
+            $this->log->debug("Pulled $file_loc from storage" . PHP_EOL);
+
+            $vprocessor = new Processing\VProcessor($dest);
 
             $v_setup = [
                 'width' => '320',
@@ -99,9 +95,6 @@ class ProcessVideoHandler extends TaskHandler
             /* Upload the processed content */
             $this->pushToStorage($v_setup, $data['broadcastid']);
 
-            /* Inform the frontend application the video is processed */
-            $this->api->removeSource($data['broadcastid']);
-
             // Acknowledge job processed
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
 
@@ -115,8 +108,12 @@ class ProcessVideoHandler extends TaskHandler
 
             $this->api->modifyBroadcast($data['broadcastid'], json_encode($broadcast_metadata));
 
+            /* Delete the temporary unprocessed file from S3 */
+            $this->storage->delete($file_loc);
+            $this->log->debug("Deleted $file_loc " . PHP_EOL);
+
             /* Cleanup local files we created */
-            $this->cleanupWorkspace($v_setup['target'], $path);
+            $this->cleanupWorkspace($v_setup['target'], $dest);
         };
 
         // Inform AMQP which job queue we consume from
@@ -132,14 +129,14 @@ class ProcessVideoHandler extends TaskHandler
     {
         /* First, upload the thumbnails we generated */
         for ($i=0; $i<$settings['thumbcount']; $i++) {
-            $keyname = "thumb/" . $id . '/' . "thumb_$i.jpg";
+            $keyname = "processed/thumb/" . $id . '/' . "thumb_$i.jpg";
             $path = $settings['target'] . "thumb_$i.jpg";
             $this->storage->put($path, $keyname);
         }
 
         /* Push the transmuxed/transcoded MP4 */
         $localpath = $settings['target'] . "$id.mp4";
-        $remotepath = "video/$id.mp4";
+        $remotepath = "processed/video/$id.mp4";
 
         $this->storage->put($localpath, $remotepath);
     }

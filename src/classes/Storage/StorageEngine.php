@@ -23,7 +23,7 @@ abstract class StorageEngine
      */
     abstract public function put($local_path, $remote_path);
 
-    abstract public function get($remote_path);
+    abstract public function get($remote_path, $local_path);
 
     /**
      * Returns the contents of a specified directory

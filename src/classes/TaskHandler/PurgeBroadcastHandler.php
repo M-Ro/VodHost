@@ -40,18 +40,18 @@ class PurgeBroadcastHandler extends TaskHandler
         $files = array();
 
         /* Delete thumbnails */
-        $thumbs = $this->storage->listDirectory("thumb/$id/");
+        $thumbs = $this->storage->listDirectory("processed/thumb/$id/");
 
         foreach ($thumbs as $thumbnail) {
             $this->storage->delete($thumbnail);
             $files[] = $thumbnail;
         }
 
-        $this->storage->delete("thumb/$id/"); // Delete thumbnail dir
+        $this->storage->delete("processed/thumb/$id/"); // Delete thumbnail dir
 
         /* Delete processed video */
-        $this->storage->delete("video/$id.mp4");
-        $files[] = "video/$id.mp4";
+        $this->storage->delete("processed/video/$id.mp4");
+        $files[] = "processed/video/$id.mp4";
 
         $this->log->debug("Worker deleted files: " . implode(", ", $files) . PHP_EOL);
 

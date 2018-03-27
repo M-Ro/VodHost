@@ -16,30 +16,6 @@ class APIMapper
     /* API Functions Below */
 
     /**
-     * Calls /api/backend/broadcast/removeSource/$id to inform the frontend that a broadcast
-     * has finalized processing.
-     *
-     * @param string $id - Broadcast ID
-     */
-    public function removeSource(string $id)
-    {
-        $api_endpoint = '/api/backend/broadcast/removesource/';
-        $url = $this->base_url . $api_endpoint . $id;
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => array('X-API-KEY: ' . $this->api_key)
-        ));
-
-        $result = curl_exec($curl);
-        curl_close($curl);
-
-        return $result;
-    }
-
-    /**
      * Calls /api/backend/retrieve/$id and returns the json result
      *
      * @param string $id - Broadcast ID

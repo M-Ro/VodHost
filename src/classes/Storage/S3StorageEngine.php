@@ -116,9 +116,25 @@ class S3StorageEngine extends StorageEngine
         }
     }
 
-    public function get($remote_path)
+    public function get($remote_path, $local_path)
     {
-        throw new \Exception("Not Implemented");
+        $object_url = $this->s3->getObjectUrl($this->s3_bucket, $remote_path);
+        if($object_url) {
+            $fp = fopen($local_path, 'w+');
+
+            $curl_handle = curl_init(str_replace(" ", "%20", $object_url));
+            curl_setopt($curl_handle, CURLOPT_FILE, $fp);
+            curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
+            $ret = curl_exec($curl_handle);
+            curl_close($curl_handle);
+            fclose($fp);
+
+            if($ret) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function listDirectory($remote_path)

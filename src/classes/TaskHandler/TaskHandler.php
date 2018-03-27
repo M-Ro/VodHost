@@ -55,7 +55,10 @@ abstract class TaskHandler
         ]);
         $redis_handler = new \Monolog\Handler\RedisHandler($client, 'backend_logs');
 
+        $php_errlog = new \Monolog\Handler\ErrorLogHandler();
+
         $logger->pushHandler($redis_handler);
+        $logger->pushHandler($php_errlog);
 
         $this->log = $logger;
     }
