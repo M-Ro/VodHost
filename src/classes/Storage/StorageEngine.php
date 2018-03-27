@@ -44,4 +44,13 @@ abstract class StorageEngine
      * @return bool
      */
     abstract public function exists($remote_path);
+
+    public static function BuildStorageEngine(array $setup, $log)
+    {
+        switch($setup['engine'])
+        {
+            case 's3': return new \VodHost\Storage\S3StorageEngine($setup, $log);
+            default: return null;
+        }
+    }
 }

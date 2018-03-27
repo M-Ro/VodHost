@@ -16,14 +16,9 @@ class PurgeBroadcastHandler extends TaskHandler
     {
         parent::__construct($config);
 
-        $s3_setup = [
-            'bucket' => 'vodhost',
-            'region' => 'eu-central-1',
-            'key' => $this->config['s3_key'],
-            'secret' => $this->config['s3_secret']
-        ];
-
-        $this->storage = new Storage\S3StorageEngine($s3_setup, $this->log);
+        $this->storage = Storage\StorageEngine::BuildStorageEngine(
+            $this->config['storage'], $this->log
+        );
     }
 
     /**
@@ -69,6 +64,11 @@ class PurgeBroadcastHandler extends TaskHandler
      */
     public function run()
     {
+        if(!$this->storage) {
+            $this->log->error("Failed to build storage engine" . PHP_EOL);
+            return;
+        }
+
         // Inform AMQP which job queue we consume from
         $this->channel->basic_consume('purge_broadcast', '', false, false, false, false, array($this, 'processTask'));
 

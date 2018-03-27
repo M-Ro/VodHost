@@ -16,14 +16,9 @@ class ProcessVideoHandler extends TaskHandler
     {
         parent::__construct($config);
 
-        $s3_setup = [
-            'bucket' => 'vodhost',
-            'region' => 'eu-central-1',
-            'key' => $this->config['s3_key'],
-            'secret' => $this->config['s3_secret']
-        ];
-
-        $this->storage = new Storage\S3StorageEngine($s3_setup, $this->log);
+        $this->storage = Storage\StorageEngine::BuildStorageEngine(
+            $this->config['storage'], $this->log
+        );
     }
 
     /**
@@ -32,12 +27,14 @@ class ProcessVideoHandler extends TaskHandler
      */
     public function run()
     {
+        if(!$this->storage) {
+            $this->log->error("Failed to build storage engine" . PHP_EOL);
+            return;
+        }
+
         /* Callback function everytime we receive a task from the queue */
         $callback = function ($msg) {
             $this->log->debug("Received task for processing: " . $msg->body . PHP_EOL);
-
-            // Acknowledge job received
-            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
 
             $data = json_decode($msg->body, true);
 
@@ -46,6 +43,7 @@ class ProcessVideoHandler extends TaskHandler
             /* Retrieve information from the frontend about the job */
             $broadcast_details = $this->api->getBroadcastInfo($id);
             if (!$broadcast_details) {
+                $this->log->error("No broadcast details: " . $id . PHP_EOL);
                 return;
             }
 
@@ -103,6 +101,9 @@ class ProcessVideoHandler extends TaskHandler
 
             /* Inform the frontend application the video is processed */
             $this->api->removeSource($data['broadcastid']);
+
+            // Acknowledge job processed
+            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
 
             $outputfilepath = $v_setup['target'] . $v_setup['output_filename'];
 

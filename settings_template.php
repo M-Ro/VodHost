@@ -47,8 +47,14 @@ $config = [
     // Internal API Key - MUST BE CHANGED
     'api_key' => 'key',
 
-    's3_key' => '',
-    's3_secret' => '',
+    'storage' => [
+		'engine' => 's3',
+		
+		's3_bucket' => '',
+		's3_region' => '',
+		's3_key' => '',
+		's3_secret' => ''
+	],
 
     'mail' => [
         'host' => 'myhost',

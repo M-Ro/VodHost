@@ -19,14 +19,14 @@ class S3StorageEngine extends StorageEngine
     {
         parent::__construct($setup, $log);
 
-        $this->s3_bucket = $setup['bucket'];
+        $this->s3_bucket = $setup['s3_bucket'];
 
         $this->s3 = new S3Client([
             'version'     => 'latest',
-            'region'      => $setup['region'],
+            'region'      => $setup['s3_region'],
             'credentials' => [
-                'key'    => $setup['key'],
-                'secret' => $setup['secret'],
+                'key'    => $setup['s3_key'],
+                'secret' => $setup['s3_secret'],
             ],
         ]);
     }
