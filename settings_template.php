@@ -25,13 +25,13 @@ $config = [
     'content_url_root' => __DIR__ . '/content',
 
     // Job Queue -- RabbitMQ Configuration
-    'jobq_server' => 'localhost',
+    'jobq_host' => 'localhost',
     'jobq_port' => 5672,
     'jobq_user' => 'guest',
     'jobq_pass' => 'guest',
 
     // Log Server -- Redis Configuration
-    'log_server' => 'localhost',
+    'log_host' => 'localhost',
     'log_port' => 6379,
     'log_pass' => 'password',
 
@@ -49,7 +49,7 @@ $config = [
 
     'storage' => [
 		'engine' => 's3',
-		
+
 		's3_bucket' => '',
 		's3_region' => '',
 		's3_key' => '',
