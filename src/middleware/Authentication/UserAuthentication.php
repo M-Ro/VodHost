@@ -8,10 +8,10 @@ use \VodHost\Authentication\UserSessionHandler as UserSessionHandler;
 
 class UserAuthentication
 {
-    public const RedirectOnFail = 0;  // Redirect the user to /
-    public const RedirectOnPass = 1;  // Redirect the user to /
-    public const Passive = 2;   // Passively inject user information to the request
-    public const Forbidden = 3; // Return a 403 code
+    const RedirectOnFail = 0;  // Redirect the user to /
+    const RedirectOnPass = 1;  // Redirect the user to /
+    const Passive = 2;   // Passively inject user information to the request
+    const Forbidden = 3; // Return a 403 code
 
     /**
      * specified action from the constants provided above
