@@ -1,87 +1,60 @@
 <?php
-if (PHP_SAPI == 'cli-server') {
-    // To help the built-in PHP dev server, check if the request was actually for
-    // something which should probably be served as a static file
-    $url  = parse_url($_SERVER['REQUEST_URI']);
-    $file = __DIR__ . $url['path'];
-    if (is_file($file)) {
-        return false;
-    }
 
-    error_reporting(E_ALL); // debug
-}
+/**
+ * Laravel - A PHP Framework For Web Artisans
+ *
+ * @package  Laravel
+ * @author   Taylor Otwell <taylor@laravel.com>
+ */
 
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+define('LARAVEL_START', microtime(true));
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../settings.php';
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| our application. We just need to utilize it! We'll simply require it
+| into the script here so that we don't have to worry about manual
+| loading any of our classes later on. It feels great to relax.
+|
+*/
 
-$app = new \Slim\App(['settings' => $config]);
+require __DIR__.'/../vendor/autoload.php';
 
-$container = $app->getContainer();
+/*
+|--------------------------------------------------------------------------
+| Turn On The Lights
+|--------------------------------------------------------------------------
+|
+| We need to illuminate PHP development, so let us turn on the lights.
+| This bootstraps the framework and gets it ready for use, then it
+| will load up this application so that we can run it and send
+| the responses back to the browser and delight our users.
+|
+*/
 
-$container['upload_directory'] = $config['upload_directory'];
-$container['temp_directory'] = $config['temp_directory'];
-$container['api_key'] = $config['api_key'];
-$container['content_url_root'] = $config['content_url_root'];
+$app = require_once __DIR__.'/../bootstrap/app.php';
 
-$container['view'] = new \Slim\Views\PhpRenderer(__DIR__ . '/../assets/templates/web/');
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+|
+| Once we have the application, we can handle the incoming request
+| through the kernel, and send the associated response back to
+| the client's browser allowing them to enjoy the creative
+| and wonderful application we have prepared for them.
+|
+*/
 
-$container['logger'] = function ($c) {
-    global $config;
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 
-    $logger = new \Monolog\Logger('Log');
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+);
 
-    $client = new Predis\Client([
-        'scheme' => 'tcp',
-        'host'   => $config['log_host'],
-        'port'   => $config['log_port'],
-        'password' => $config['log_pass']
-    ]);
-    $redis_handler = new \Monolog\Handler\RedisHandler($client, 'frontend_logs');
+$response->send();
 
-    $logger->pushHandler($redis_handler);
-    return $logger;
-};
-
-/* Doctrine */
-$container['em'] = function ($c) {
-    global $config;
-
-    $doctrine_conf = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(
-        ['../src/classes/Entity'],
-        true,
-        __DIR__ . '/cache/proxies',
-        null,
-        false
-    );
-    
-    return \Doctrine\ORM\EntityManager::create($config['db_connection'], $doctrine_conf);
-};
-
-/* AMQP */
-$container['mq'] = function ($c) {
-    global $config;
-
-    $c = new AMQPStreamConnection(
-        $config['jobq_host'],
-        $config['jobq_port'],
-        $config['jobq_user'],
-        $config['jobq_pass']
-    );
-
-    $channel = $c->channel();
-    $channel->queue_declare('vprocessing', false, true, false, false);
-    
-    return $channel;
-};
-
-require __DIR__ . '/../src/routes/web/broadcast.php';
-require __DIR__ . '/../src/routes/web/landing.php';
-require __DIR__ . '/../src/routes/web/user.php';
-
-require __DIR__ . '/../src/routes/api/backend.php';
-require __DIR__ . '/../src/routes/api/broadcast.php';
-require __DIR__ . '/../src/routes/api/user.php';
-
-$app->run();
+$kernel->terminate($request, $response);
