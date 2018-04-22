@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Broadcast extends Model
 {
+    public $incrementing = false;
+    protected $hidden = ['user_id', 'filename', 'updated_at'];
+
     /**
     * Generates a 10 character random alphanumeric string.
     *

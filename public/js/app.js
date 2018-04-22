@@ -36283,6 +36283,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__VideoCard__ = __webpack_require__(63);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36294,55 +36297,66 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
-var Example = function (_Component) {
-    _inherits(Example, _Component);
 
-    function Example() {
-        _classCallCheck(this, Example);
 
-        return _possibleConstructorReturn(this, (Example.__proto__ || Object.getPrototypeOf(Example)).apply(this, arguments));
+var VideoList = function (_Component) {
+    _inherits(VideoList, _Component);
+
+    function VideoList(props) {
+        _classCallCheck(this, VideoList);
+
+        var _this = _possibleConstructorReturn(this, (VideoList.__proto__ || Object.getPrototypeOf(VideoList)).call(this, props));
+
+        _this.state = {
+            videos: [],
+            contentUrl: contentUrl
+        };
+        return _this;
     }
 
-    _createClass(Example, [{
+    _createClass(VideoList, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this2 = this;
+
+            /* Fetch recent broadcasts from the REST API */
+            __WEBPACK_IMPORTED_MODULE_2_axios___default.a.get('/broadcast/recent').then(function (response) {
+                return _this2.setState({ videos: JSON.parse(response.data.replace(/\\/g, '')) });
+            }).catch(function (error) {
+                return console.log(error);
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var videoElements = this.state.videos.map(function (video) {
+                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'li',
+                    { key: video.id },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__VideoCard__["a" /* default */], { video: video })
+                );
+            });
+
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
-                { className: 'container' },
+                { className: 'video-list' },
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: 'row justify-content-center' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'col-md-8' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'div',
-                            { className: 'card' },
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'div',
-                                { className: 'card-header' },
-                                'Example Component'
-                            ),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'div',
-                                { className: 'card-body' },
-                                'I\'m an example component!'
-                            )
-                        )
-                    )
+                    'ul',
+                    null,
+                    videoElements
                 )
             );
         }
     }]);
 
-    return Example;
+    return VideoList;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
-/* harmony default export */ __webpack_exports__["default"] = (Example);
+/* harmony default export */ __webpack_exports__["default"] = (VideoList);
 
 
-if (document.getElementById('example')) {
-    __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Example, null), document.getElementById('example'));
+if (document.getElementById('video-grid')) {
+    __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(VideoList, null), document.getElementById('video-grid'));
 }
 
 /***/ }),
@@ -54903,6 +54917,153 @@ module.exports = camelize;
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+var VideoCard = function (_Component) {
+    _inherits(VideoCard, _Component);
+
+    function VideoCard(props) {
+        _classCallCheck(this, VideoCard);
+
+        var _this = _possibleConstructorReturn(this, (VideoCard.__proto__ || Object.getPrototypeOf(VideoCard)).call(this, props));
+
+        var thumb = "";
+
+        if (props.video.state == 'processing') {
+            thumb = '/img/processing.png';
+        } else {
+            thumb = contentUrl + '/thumb/' + props.video.id + '/thumb_0.jpg';
+        }
+
+        _this.state = {
+            video: props.video,
+            contentUrl: contentUrl,
+            thumb: thumb,
+            anim_i: 1
+        };
+
+        _this.mouseEnter = _this.mouseEnter.bind(_this);
+        _this.mouseLeave = _this.mouseLeave.bind(_this);
+        _this.tick = _this.tick.bind(_this);
+        return _this;
+    }
+
+    // Animate the thumbnail
+
+
+    _createClass(VideoCard, [{
+        key: 'tick',
+        value: function tick() {
+            var _this2 = this;
+
+            this.state.thumb = contentUrl + '/thumb/' + this.state.video.id + '/thumb_' + this.state.anim_i + '.jpg';
+
+            this.setState(function (prevState, props) {
+                return { thumb: contentUrl + '/thumb/' + _this2.state.video.id + '/thumb_' + _this2.state.anim_i + '.jpg' };
+            });
+
+            this.state.anim_i += 1;
+            if (this.state.anim_i > 5) {
+                this.state.anim_i = 0;
+            }
+        }
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {
+            clearInterval(this.interval);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var video = this.state.video;
+
+            var url = "/view/" + video.id;
+
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'div',
+                { className: 'video-card', onMouseEnter: this.mouseEnter, onMouseLeave: this.mouseLeave },
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'a',
+                    { href: url },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('img', { src: this.state.thumb }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'h4',
+                        null,
+                        video.title
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'h5',
+                    null,
+                    'Uploaded by: ',
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'strong',
+                        null,
+                        video.uploader
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'h5',
+                    null,
+                    video.views,
+                    ' views \u2022 ',
+                    video.created_at
+                )
+            );
+        }
+    }, {
+        key: 'mouseEnter',
+        value: function mouseEnter() {
+            if (this.state.video.state != 'processing') {
+                this.interval = setInterval(this.tick, 500);
+            }
+        }
+    }, {
+        key: 'mouseLeave',
+        value: function mouseLeave() {
+            clearInterval(this.interval);
+
+            this.setState(function (prevState, props) {
+                return {
+                    thumb: contentUrl + '/thumb/' + props.video.id + '/thumb_0.jpg',
+                    anim_i: 1
+                };
+            });
+        }
+    }]);
+
+    return VideoCard;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+/* harmony default export */ __webpack_exports__["a"] = (VideoCard);
+
+
+if (document.getElementById('video-card')) {
+    __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(VideoCard, null), document.getElementById('video-card'));
+}
 
 /***/ })
 /******/ ]);
