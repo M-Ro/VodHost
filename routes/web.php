@@ -13,6 +13,10 @@
 
 Route::get('/', 'HomeController@index')->name('home');
 
+Route::get('/upload', 'BroadcastController@upload')->name('upload')->middleware('auth');
+
+Route::get('/user/account', 'UserController@account')->name('account')->middleware('auth');
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');

@@ -33,4 +33,14 @@ class BroadcastController extends Controller
 
         return response()->json($json);
     }
+
+    /**
+     * Display the view for uploading a video
+     *
+     * @return \Illuminate\Http\Response
+     */
+     public function upload()
+     {
+         return view('upload');
+     }
 }
