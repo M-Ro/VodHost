@@ -19,6 +19,8 @@ Route::get('/user/account', 'UserController@account')->name('account')->middlewa
 
 Auth::routes();
 
+Route::get('/user/verify/{token}', 'Auth\RegisterController@verify');
+
 Route::get('/home', 'HomeController@index');
 
 /* /Broadcast routes */

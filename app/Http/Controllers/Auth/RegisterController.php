@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use App\UserVerification;
+use App\Mail\UserVerificationMail;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -63,10 +67,60 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
+
+        $verifyUser = UserVerification::create([
+            'user_id' => $user->id,
+            'token' => str_random(40)
+        ]);
+
+        Mail::to($user->email)->send(new UserVerificationMail($user));
+
+        return $user;
+    }
+
+    /**
+     * Verify a user account with the provided activation token.
+     *
+     * @param  string $token
+     * @return \Illuminate\Http\Response
+     */
+    public function verify($token)
+    {
+        $userVerification = UserVerification::where('token', $token)->first();
+
+        if (isset($userVerification)) {
+            $user = $userVerification->user;
+
+            if (!$user->verified) {
+                $userVerification->user->verified = 1;
+                $userVerification->user->save();
+
+                $status = "Account verified. You may now login.";
+            } else {
+                $status = "Account already verified. You may login.";
+            }
+        } else {
+            return redirect('/login')->with('warning', "Sorry your account cannot be identified.");
+        }
+
+        return redirect('/login')->with('status', $status);
+    }
+
+    /**
+     * Overrides the registered method from RegistersUsers
+     *
+     * @param  string $token
+     * @return \Illuminate\Http\Response
+     */
+    protected function registered(Request $request, $user)
+    {
+        $this->guard()->logout();
+
+        return redirect('/login')->with('status', 'We sent you an activation code. Check your email and click on the link to verify.');
     }
 }
