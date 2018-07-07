@@ -2,29 +2,13 @@
 // Fonts
 @import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
 
-// Variables
-@import "variables";
-
 // Bootstrap
+@import "bootswatch-darkly/variables";
 @import '~bootstrap/scss/bootstrap';
+@import "bootswatch-darkly/bootswatch";
 
 body {
-    background-color: #f4f4f4;
-    background-image: url('/img/noise.png');
-    background-repeat: repeat;
-}
-
-.navbar-laravel {
-  background-color: #2d3e50;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-
-  .navbar-brand {
-      color: #fff;
-  }
-}
-
-.navbar-dark .navbar-nav .nav-link {
-    color: #fff;
+    padding-top: 90px;
 }
 
 #video-grid {
