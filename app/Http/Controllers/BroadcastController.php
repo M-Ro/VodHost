@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Broadcast as Broadcast;
+use App\Models\Broadcast as Broadcast;
 
 class BroadcastController extends Controller
 {

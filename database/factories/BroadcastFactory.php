@@ -2,9 +2,9 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(App\Broadcast::class, function (Faker $faker) {
+$factory->define(App\Models\Broadcast::class, function (Faker $faker) {
     return [
-        'id' => App\Broadcast::generateID(),
+        'id' => App\Models\Broadcast::generateID(),
         'user_id' => $faker->randomNumber(3, false),
         'title' => substr($faker->sentence(2), 0, -1),
         'description' => $faker->paragraph,
