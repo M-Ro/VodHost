@@ -16,12 +16,19 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::get('/upload', 'BroadcastController@upload')->name('upload')->middleware('auth');
 
 Route::get('/user/account', 'UserController@account')->name('account')->middleware('auth');
+Route::get('/user/verify/{token}', 'Auth\RegisterController@verify');
 
 Auth::routes();
 
-Route::get('/user/verify/{token}', 'Auth\RegisterController@verify');
+/* Admin Routes */
+Route::middleware('App\Http\Middleware\Admin')->prefix('administration')->group(function () {
+    Route::get('/', 'AdminController@dashboard')->name('admin');
+    Route::get('/users', 'AdminController@users')->name('users');
+    Route::get('/content', 'AdminController@content')->name('content');
+    Route::get('/storage', 'AdminController@storage')->name('storage');
 
-Route::get('/home', 'HomeController@index');
+});
+
 
 /* /Broadcast routes */
 
